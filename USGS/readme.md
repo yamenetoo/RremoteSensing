@@ -16,3 +16,17 @@ pip install -e .
 
 # Or install dependencies manually
 pip install -r requirements.txt
+
+
+## Quick Start
+###  Build the Material Library
+
+from usgs_splib07_processor import build_material_library
+
+build_material_library(
+    csv_dir=r"D:\usgs_splib07\extracted_tables",
+    output_path=r"D:\usgs_splib07\material_functions.pkl",
+    base_path=r"D:\usgs_splib07",  # Optional: overrides hardcoded D:\ paths
+    plot=False,
+    column_indices=[0, 2, 4]       # [name, reflectance_path, wavelength_path]
+)
