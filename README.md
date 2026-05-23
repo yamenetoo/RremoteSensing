@@ -1,4 +1,3 @@
-![RremoteSensing](remote_sensing_image.jfif)
 
 # RremoteSensing
 
