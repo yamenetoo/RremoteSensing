@@ -24,7 +24,7 @@ Or simply run the script directly.
 
 ### Initialisation
 ```python
-init_ee(project_id='ee-almohamadmohamad678')
+init_ee(project_id='ee-xxxxx')
 ```
 - **Purpose**: Authenticates and initialises the Earth Engine API. If no valid authentication exists, it triggers an interactive login.
 - **Parameters**:
