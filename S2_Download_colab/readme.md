@@ -15,7 +15,7 @@ The entry point of the script. It:
 
 **Usage** (in a Colab cell):
 ```python
-from your_script_name import main
+from S2 import main
 main()
 ```
 Or simply run the script directly.
