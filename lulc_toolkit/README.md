@@ -24,13 +24,13 @@ any Python environment with Earth Engine credentials configured.
 ## Installation
 
 ```bash
-pip install git+https://github.com/YOUR_USERNAME/lulc-toolkit.git
+pip install git+https://github.com/yamenetoo/lulc-toolkit.git
 ```
 
 Or, in a Colab cell:
 
 ```python
-!pip install -q git+https://github.com/YOUR_USERNAME/lulc-toolkit.git
+!pip install -q git+https://github.com/yamenetoo/lulc-toolkit.git
 !apt-get install unrar -y -qq   # only needed if your shapefile is a .rar archive
 ```
 
@@ -123,7 +123,7 @@ narrated, cell-by-cell Colab notebook.
 ## Development
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/lulc-toolkit.git
+git clone https://github.com/yamenetoo/lulc-toolkit.git
 cd lulc-toolkit
 pip install -e ".[dev]"
 pytest
