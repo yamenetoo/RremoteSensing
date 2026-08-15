@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lulc-toolkit"
+version = "0.1.0"
+description = "Function-based toolkit for downloading, mapping, and analyzing Google Dynamic World land-cover data per district/year using Earth Engine."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Your Name" }
+]
+keywords = ["gis", "remote-sensing", "earth-engine", "land-cover", "lulc", "dynamic-world", "gee"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+
+dependencies = [
+    "earthengine-api",
+    "geemap",
+    "geedim",
+    "geopandas",
+    "rasterio",
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "matplotlib-scalebar",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/YOUR_USERNAME/lulc-toolkit"
+Issues = "https://github.com/YOUR_USERNAME/lulc-toolkit/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]

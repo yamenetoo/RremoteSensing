@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+.ipynb_checkpoints/
+.env
+.venv/
+venv/
+*.tif
+*.tiff
+*.zip
+*.rar
+.DS_Store
