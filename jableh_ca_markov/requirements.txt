@@ -1,0 +1,43 @@
+# ============================================================
+# Core (required for the offline statistical pipeline: markov_ipf,
+# projection, uncertainty, sensitivity, scenarios, pipeline)
+# ============================================================
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10
+
+# ============================================================
+# Raster / geospatial (required for ca_allocation, spatial_analysis,
+# validation's hindcast raster comparison, mapping)
+# ============================================================
+rasterio>=1.3
+geopandas>=0.14
+shapely>=2.0
+richdem>=0.3          # slope computation from DEM (revision 2.3)
+
+# ============================================================
+# Earth Engine data acquisition (Colab / data_acquisition.py)
+# ============================================================
+earthengine-api>=0.1.390
+
+# ============================================================
+# Benchmark models (revision 3.3)
+# ============================================================
+scikit-learn>=1.3
+
+# ============================================================
+# Mapping / visualisation
+# ============================================================
+matplotlib>=3.7
+cartopy>=0.22
+Pillow>=10.0
+
+# ============================================================
+# Project's own Dynamic World / LULC helper toolkit
+# ============================================================
+lulc-toolkit @ git+https://github.com/yamenetoo/RremoteSensing.git#subdirectory=lulc_toolkit
+
+# ============================================================
+# Testing
+# ============================================================
+pytest>=7.4
