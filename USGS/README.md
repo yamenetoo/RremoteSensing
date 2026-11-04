@@ -12,9 +12,8 @@ lib.search("kaolinite")                          # find spectra by name
 lib.to_sensor("sentinel2a").normalized("l2")     # the library as Sentinel-2 would record it
 ```
 
-**Scope.** This package stops at *spectra*: data access and preprocessing. Comparing the library with satellite
-images is a different job and lives in a separate project, which can build on this one
-(for example `lib.to_sensor(...)` gives the library on the bands of any sensor).
+**Scope.** This package is about *spectra*: getting the USGS library and preprocessing it. It does not read, download
+or process images.
 
 > Not affiliated with or endorsed by the U.S. Geological Survey. The data are theirs, see [Data and citation](#data-and-citation).
 
@@ -360,8 +359,8 @@ Band definitions used to simulate what a sensor would record.
 | Function | What it does |
 |---|---|
 | `get_sensor()` | Look up a sensor by name or alias (`sentinel2a`, `landsat8`, `aster`, ...); a Sensor object is returned unchanged. |
-| `sensor_from_wavelengths()` | Build a sensor from band centres (nm), e.g. read from a hyperspectral product's metadata. |
-| `subset_sensor()` | Keep only the named bands, in the given order (e.g. the bands of a Sentinel-2 GeoTIFF export). |
+| `sensor_from_wavelengths()` | Build a sensor (for example a hyperspectral instrument) from its band centres in nm and optional band widths. |
+| `subset_sensor()` | Keep only the named bands of a sensor, in the order given (e.g. B2, B3, B4, B8). |
 | `register_sensor()` | Add a sensor definition (and optional aliases) to the registry. |
 
 ### 7. Demo data
@@ -410,8 +409,7 @@ Run the tests with `pip install -e ".[dev]" && pytest`.
 
 ### Changes in 3.0
 
-Satellite-image reading and pixel matching (`Image`, `match_image`) were removed from this package to keep it focused
-on spectra. New: `get_library`, `SpectralLibrary.search / materials / spectrum / plot / to_csv`, the function
+Focused on spectra. New: `get_library`, `SpectralLibrary.search / materials / spectrum / plot / to_csv`, the function
 catalogue (`list_functions`), logo and examples.
 
 ## Data and citation

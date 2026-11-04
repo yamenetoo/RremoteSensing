@@ -85,8 +85,8 @@ Band definitions used to simulate what a sensor would record.
 | Function | What it does |
 |---|---|
 | `get_sensor(name_or_sensor)` | Look up a sensor by name or alias (`sentinel2a`, `landsat8`, `aster`, ...); a Sensor object is returned unchanged. |
-| `sensor_from_wavelengths(name, centers, fwhm=None, names=None, shape='gaussian')` | Build a sensor from band centres (nm), e.g. read from a hyperspectral product's metadata. |
-| `subset_sensor(sensor, band_names)` | Keep only the named bands, in the given order (e.g. the bands of a Sentinel-2 GeoTIFF export). |
+| `sensor_from_wavelengths(name, centers, fwhm=None, names=None, shape='gaussian')` | Build a sensor (for example a hyperspectral instrument) from its band centres in nm and optional band widths. |
+| `subset_sensor(sensor, band_names)` | Keep only the named bands of a sensor, in the order given (e.g. B2, B3, B4, B8). |
 | `register_sensor(sensor, *aliases)` | Add a sensor definition (and optional aliases) to the registry. |
 
 ## 7. Demo data

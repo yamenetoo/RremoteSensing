@@ -68,7 +68,7 @@ def _aster() -> Sensor:
 
 
 def sensor_from_wavelengths(name, centers, fwhm=None, names=None, shape: str = "gaussian") -> Sensor:
-    """Build a sensor from band centres (nm), e.g. read from a hyperspectral product's metadata.
+    """Build a sensor (for example a hyperspectral instrument) from its band centres in nm and optional band widths.
 
     ``fwhm`` may be one number, one value per band, or None. When None the width of each
     band is taken as the local band spacing (a reasonable default for imaging spectrometers,
@@ -88,7 +88,7 @@ def sensor_from_wavelengths(name, centers, fwhm=None, names=None, shape: str = "
 
 
 def subset_sensor(sensor, band_names) -> Sensor:
-    """Keep only the named bands, in the given order (e.g. the bands of a Sentinel-2 GeoTIFF export)."""
+    """Keep only the named bands of a sensor, in the order given (e.g. B2, B3, B4, B8)."""
     s = get_sensor(sensor)
     by_name = {b.name: b for b in s.bands}
     missing = [n for n in band_names if n not in by_name]

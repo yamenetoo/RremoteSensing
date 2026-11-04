@@ -89,11 +89,11 @@ def main() -> None:
         )
         print(idx.assign(name=lib.meta["name"]).set_index("name").round(3).to_string(), "\n")
 
-        # 4) Match an unknown pixel (noisy, coarser, different wavelengths) with spectral angle
+        # 4) Match an unknown spectrum (noisy, coarser, different wavelengths) with spectral angle
         true = spectra()["Kaolinite_KGa1_ASDFRb_AREF"][1]
         pixel_wl = np.arange(400, 2450, 20.0)
         pixel = np.interp(pixel_wl, NM, true) * 0.8 + RNG.normal(0, 0.01, pixel_wl.size)  # darker + noisy
-        print("Best matches for an unknown pixel (should be Kaolinite):")
+        print("Best matches for an unknown spectrum (should be Kaolinite):")
         print(lib.match(pixel, k=3, query_wavelengths=pixel_wl).round(4).to_string(index=False), "\n")
 
         # 5) Save and reload (no pickle)
