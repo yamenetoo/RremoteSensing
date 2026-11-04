@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geedownload"
+version = "0.2.0"
+description = "Search any area by name, save its boundary as a shapefile, download satellite data from Google Earth Engine, draw cartopy maps, and serve it all as a REST API."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "M. Yamen AL-Mohamad", email = "yamenmohamad@tabrizu.ac.ir" }]
+maintainers = [{ name = "M. Yamen AL-Mohamad", email = "yamenmohamad@tabrizu.ac.ir" }]
+keywords = ["google earth engine", "remote sensing", "sentinel-2", "landsat", "modis", "geotiff", "shapefile", "cartopy", "fastapi"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+dependencies = [
+    "earthengine-api>=0.1.380",
+    "requests>=2.28",
+    "shapely>=2.0",
+    "geopandas>=0.14",
+    "pyproj>=3.4",
+    "rasterio>=1.3",
+    "numpy",
+]
+
+[project.optional-dependencies]
+maps = ["cartopy>=0.22", "matplotlib>=3.7", "pillow"]
+api = ["fastapi>=0.110", "uvicorn[standard]>=0.27", "cartopy>=0.22", "matplotlib>=3.7", "pillow"]
+all = ["cartopy>=0.22", "matplotlib>=3.7", "pillow", "fastapi>=0.110", "uvicorn[standard]>=0.27"]
+dev = ["pytest", "httpx", "cartopy>=0.22", "matplotlib>=3.7", "pillow", "fastapi>=0.110", "uvicorn[standard]>=0.27"]
+
+[project.urls]
+Homepage = "https://github.com/yamenetoo/RremoteSensing/tree/main/geedownload"
+Author = "https://yamenetoo.github.io"
+"Google Scholar" = "https://scholar.google.com/citations?user=un_6SQwAAAAJ"
+ORCID = "https://orcid.org/0009-0009-1665-7203"
+
+[project.scripts]
+geedownload = "geedownload.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+geedownload = ["assets/*.svg", "assets/*.png"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

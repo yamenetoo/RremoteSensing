@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="512" height="512" role="img" aria-label="geedownload logo">
+  <title>geedownload</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1f3a"/>
+      <stop offset="1" stop-color="#14456b"/>
+    </linearGradient>
+    <radialGradient id="globe" cx="0.35" cy="0.3" r="0.9">
+      <stop offset="0" stop-color="#3fd0b8"/>
+      <stop offset="0.55" stop-color="#139aa0"/>
+      <stop offset="1" stop-color="#0a5f80"/>
+    </radialGradient>
+    <clipPath id="clip"><circle cx="200" cy="205" r="120"/></clipPath>
+  </defs>
+
+  <rect width="400" height="400" rx="84" fill="url(#bg)"/>
+
+  <!-- orbit: back half (behind the globe) -->
+  <g transform="translate(200 205) rotate(-22)" fill="none" stroke="#9fd8ff" stroke-width="3" opacity="0.55">
+    <path d="M -165 0 A 165 55 0 0 1 165 0"/>
+  </g>
+
+  <!-- globe -->
+  <circle cx="200" cy="205" r="120" fill="url(#globe)"/>
+  <g clip-path="url(#clip)">
+    <!-- land masses -->
+    <g fill="#baf2cf" opacity="0.38">
+      <path d="M118 150 C140 128 170 132 186 150 C196 168 178 186 160 188 C142 190 124 178 118 150 Z"/>
+      <path d="M214 232 C236 220 268 226 280 246 C286 268 262 292 240 288 C220 282 206 250 214 232 Z"/>
+      <path d="M226 128 C244 116 270 120 276 136 C270 150 244 152 232 146 C226 142 224 134 226 128 Z"/>
+    </g>
+    <!-- graticule -->
+    <g fill="none" stroke="#ffffff" stroke-width="2" opacity="0.38">
+      <ellipse cx="200" cy="205" rx="62" ry="120"/>
+      <ellipse cx="200" cy="205" rx="112" ry="120"/>
+      <line x1="200" y1="85" x2="200" y2="325"/>
+      <line x1="80" y1="205" x2="320" y2="205"/>
+      <path d="M86 150 Q200 178 314 150"/>
+      <path d="M86 262 Q200 290 314 262"/>
+    </g>
+    <!-- area of interest -->
+    <path d="M224 150 L268 158 L274 198 L232 206 Z" fill="#ffb703" fill-opacity="0.85" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+  <circle cx="200" cy="205" r="120" fill="none" stroke="#9ff3e6" stroke-width="3" opacity="0.9"/>
+
+  <!-- download beam from the satellite to the area of interest -->
+  <line x1="142" y1="282" x2="236" y2="196" stroke="#ffb703" stroke-width="4" stroke-dasharray="3 9" stroke-linecap="round"/>
+  <path d="M236 196 l-18 3 l9 9 z" fill="#ffb703"/>
+
+  <!-- orbit: front half -->
+  <g transform="translate(200 205) rotate(-22)" fill="none" stroke="#e6f6ff" stroke-width="3.5">
+    <path d="M 165 0 A 165 55 0 0 1 -165 0"/>
+  </g>
+
+  <!-- satellite -->
+  <g transform="translate(142 280) rotate(-22)">
+    <rect x="-34" y="-6" width="22" height="12" rx="2" fill="#ffb703" stroke="#0b1f3a" stroke-width="2"/>
+    <rect x="12" y="-6" width="22" height="12" rx="2" fill="#ffb703" stroke="#0b1f3a" stroke-width="2"/>
+    <rect x="-11" y="-11" width="22" height="22" rx="4" fill="#f1f5f9" stroke="#0b1f3a" stroke-width="2.5"/>
+    <circle cx="0" cy="0" r="4.5" fill="#139aa0"/>
+  </g>
+</svg>

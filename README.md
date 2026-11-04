@@ -14,7 +14,7 @@ Maintained by **Mohamad Yamen Al-Mohamad**, Department of Statistics, University
 4. [Project details](#4-project-details)
    - [4.1 lulc_toolkit](#41-lulc_toolkit)
    - [4.2 jableh_ca_markov](#42-jableh_ca_markov)
-   - [4.3 S2_Download_colab](#43-s2_download_colab)
+   - [4.3 geedownload](#43-geedownload)
    - [4.4 USGS (usgs_splib07_processor)](#44-usgs-usgs_splib07_processor)
 5. [Getting started](#5-getting-started)
 6. [Requirements and accounts](#6-requirements-and-accounts)
@@ -47,9 +47,11 @@ RremoteSensing/
 │   ├── tests/test_markov_ipf.py
 │   ├── setup.py  requirements.txt  environment.yml  CHANGELOG.md  LICENSE  README.md
 │
-├── S2_Download_colab/                Colab script: batch download of all Sentinel-2 bands from GEE
-│   ├── S2.py
-│   └── readme.md
+├── geedownload/                      Python package + REST API: area search, GEE download of any satellite data, maps
+│   ├── src/geedownload/              geocode, aoi, boundary, catalog, download, pipeline, maps, api, cli
+│   ├── docs/FUNCTION_CATALOGUE.md    generated reference of every function, dataset, CLI command and endpoint
+│   ├── tests/
+│   ├── pyproject.toml  LICENSE  README.md
 │
 └── USGS/                             Python package: USGS Spectral Library v7 -> interpolation functions
     ├── usgs_splib07_processor/       core.py, builder.py, __init__.py
@@ -63,7 +65,7 @@ RremoteSensing/
 |---|---|---|---|---|---|
 | `lulc_toolkit` | Download annual Dynamic World composites per district and year; render maps, area statistics and charts | Python ≥ 3.9, built for Colab | Yes | 0.1.0 (alpha) | `tests/test_statistics.py` |
 | `jableh_ca_markov` | Markov chain + cellular-automata LULC change model and 2030 forecast for Jableh District | Python ≥ 3.10 | Only for the raster stages | 1.0.0 | `tests/test_markov_ipf.py` |
-| `S2_Download_colab` | One-shot download of every Sentinel-2 band (10/20/60 m, atmospheric, quality) for a bounding box | Python, Google Colab | Yes | script | – |
+| `geedownload` | Search an area by name, save its shapefile, download any GEE satellite dataset (Sentinel, Landsat, MODIS, DEM ...), draw cartopy maps, serve a REST API | Python ≥ 3.9 | Yes | 0.2.0 | `tests/` |
 | `USGS` | Turn USGS Splib07 spectra into callable reflectance functions `P_m(λ)` | Python ≥ 3.8 | No | 1.0.0 | – |
 
 ## 3. How the projects fit together
@@ -72,8 +74,8 @@ RremoteSensing/
    shapefile of districts                  bounding box + dates
             │                                      │
             ▼                                      ▼
-     lulc_toolkit  ──────────────┐        S2_Download_colab
-  (Dynamic World per district    │        (all Sentinel-2 bands, GeoTIFF)
+     lulc_toolkit  ──────────────┐        geedownload
+  (Dynamic World per district    │        (any GEE dataset, maps, API)
    and year: maps, stats, charts)│
             │ Pivot_km2.csv      │ helper functions (acquisition, PNG export)
             ▼                    ▼
@@ -85,7 +87,7 @@ RremoteSensing/
 ```
 
 - `lulc_toolkit` produces the annual class-area table (`Pivot_km2.csv`) that `jableh_ca_markov` consumes, and `jableh_ca_markov/requirements.txt` installs `lulc_toolkit` straight from this repository (`git+https://github.com/yamenetoo/RremoteSensing.git#subdirectory=lulc_toolkit`).
-- `S2_Download_colab` and `USGS` are stand-alone building blocks for spectral work.
+- `geedownload` and `USGS` are stand-alone building blocks for spectral work.
 
 ---
 
@@ -233,60 +235,18 @@ MIT licence.
 
 ---
 
-### 4.3 S2_Download_colab
+### 4.3 geedownload
 
-A single Colab-oriented script, `S2.py`, that downloads **every Sentinel-2 band** of a median composite for a bounding box and stores them in an organised, timestamped folder tree with a metadata file and an optional zip archive. Collection used: `COPERNICUS/S2_SR_HARMONIZED`, filtered by bounds, date range and `CLOUDY_PIXEL_PERCENTAGE`.
-
-**Configuration** (the global `CONFIG` dict at the top of `S2.py`)
+`geedownload` (v0.2.0) generalises the former `S2_Download_colab/S2.py` script. Besides Sentinel-2 it downloads **any Google Earth Engine satellite dataset** (Sentinel-1/2, Landsat 5/7/8/9, MODIS, SRTM and Copernicus DEM, WorldCover, Dynamic World, CHIRPS, ERA5-Land, ... or any asset id), finds the **area by name** (city, province or country), saves its **boundary as a shapefile**, draws **cartopy maps** (JPG: lat/lon grid, scale bar, north arrow, legend, country inset) and exposes everything as a **REST API** (FastAPI).
 
 ```python
-CONFIG = {
-    'location_name': 'Baghdadi_Haditha',   # used in folder and file names
-    'country': 'Iraq',
-    'bbox': [42.35, 33.84, 42.55, 33.96],  # [west, south, east, north]
-    'start_date': '2023-06-01', 'end_date': '2023-09-30',
-    'cloud_threshold': 10,                 # max cloudy-pixel percentage
-    'output_resolution': 10,               # metres
-    'crs': 'EPSG:32637',
-    'max_pixels': 1e9,
-    'create_zip_archive': True,
-}
+import geedownload as gd
+res = gd.download_area("Masyaf, Syria", "sentinel2", "2023-06-01", "2023-09-30",
+                       out_dir="out", cloud_max=10, project="my-ee-project")
+gd.plot_map(res.stack, "masyaf_rgb.jpg", area="Masyaf, Syria", bands=["B4", "B3", "B2"])
 ```
 
-**Band groups** (`SENTINEL2_BANDS`, anything else lands in `other_bands`)
-
-| Group | Bands | Output subfolder |
-|---|---|---|
-| `10m_bands` | B2, B3, B4, B8 | `spectral_10m/` |
-| `20m_bands` | B5, B6, B7, B8A, B11, B12 | `spectral_20m/` |
-| `60m_bands` | B1, B9, B10 | `spectral_60m/` |
-| `atmospheric_bands` | AOT, WVP, SCL, TCI_R, TCI_G, TCI_B | `atmospheric/` |
-| `quality_bands` | MSK_CLDPRB, MSK_SNWPRB, QA10, QA20, QA60 | `quality/` |
-
-All bands are exported at `output_resolution` (the 20 m and 60 m bands are resampled to it).
-
-**Functions**: `init_ee(project_id)`, `create_output_structure()`, `create_study_area(bbox)`, `get_sentinel2_image(study_area)`, `download_band_with_organization(...)`, `download_bands_organized(...)`, `download_composite_image(...)` (RGB), `create_metadata_file(...)`, `create_zip_archive(...)`, `main()`. Bands are downloaded one at a time, which keeps each request under the Earth Engine direct-download size limit; very large boxes may still fail, in which case shrink `bbox`.
-
-**Run in Colab**
-
-```python
-!pip install earthengine-api -q
-# upload S2.py or paste it into a cell, edit CONFIG, then:
-from S2 import main
-main()          # prints a files.download(...) line for the zip at the end
-```
-
-**Output layout**
-
-```
-<location>_sentinel_<YYYYMMDD_HHMMSS>/
-├── spectral_10m/  spectral_20m/  spectral_60m/  atmospheric/  quality/
-├── metadata/metadata.txt
-├── <location>_composite_rgb.tif
-└── zipped/<folder>.zip
-```
-
-Console messages and `metadata.txt` are written in Arabic.
+The old script's run is reproduced with `gd.download_area([42.35, 33.84, 42.55, 33.96], "sentinel2", "2023-06-01", "2023-09-30", bands="all", crs="EPSG:32637", scale=10)`. Large areas are tiled automatically. See [`geedownload/README.md`](geedownload/README.md) for the CLI and REST examples and [`geedownload/docs/FUNCTION_CATALOGUE.md`](geedownload/docs/FUNCTION_CATALOGUE.md) for every function. MIT licence.
 
 ---
 
@@ -351,7 +311,7 @@ cd RremoteSensing
 |---|---|
 | get annual land-cover maps and area tables per district | `lulc_toolkit` → `examples/run_pipeline.py` or `tutorial_colab.ipynb` |
 | model and forecast land-cover change (Markov / CA) | `jableh_ca_markov` → offline quick start, then the Colab notebook |
-| download every Sentinel-2 band for a small area | `S2_Download_colab/S2.py` |
+| search an area by name and download satellite data (Sentinel, Landsat, MODIS, DEM ...) with maps | `geedownload` → `README.md` |
 | use reference mineral / soil / vegetation spectra as functions | `USGS` |
 
 ## 6. Requirements and accounts
@@ -359,8 +319,8 @@ cd RremoteSensing
 | Need | Used by | Notes |
 |---|---|---|
 | Python 3.8+ (3.9+ for `lulc_toolkit`, 3.10+ for `jableh_ca_markov`) | all | |
-| Google Earth Engine account and a Cloud project id | `lulc_toolkit`, `S2_Download_colab`, GEE stages of `jableh_ca_markov` | `ee.Authenticate()` on first use |
-| Google Colab and Google Drive | `lulc_toolkit`, `S2_Download_colab`, the notebooks | `S2.py` imports `google.colab` |
+| Google Earth Engine account and a Cloud project id | `lulc_toolkit`, `geedownload`, GEE stages of `jableh_ca_markov` | `ee.Authenticate()` on first use |
+| Google Colab and Google Drive | `lulc_toolkit`, the notebooks | `geedownload` also runs outside Colab |
 | numpy, pandas, scipy | all | |
 | geopandas, rasterio, shapely, richdem | raster stages | richdem for slope from a DEM |
 | matplotlib, cartopy, Pillow, matplotlib-scalebar | maps and charts | |
@@ -373,7 +333,7 @@ cd RremoteSensing
 | Data | Source | Used in |
 |---|---|---|
 | Dynamic World V1 | Google / WRI, `GOOGLE/DYNAMICWORLD/V1` (Brown et al., 2022) | `lulc_toolkit`, `jableh_ca_markov` |
-| Sentinel-2 L2A Harmonized | ESA Copernicus, `COPERNICUS/S2_SR_HARMONIZED` | `S2_Download_colab` |
+| Sentinel-2 L2A Harmonized and other GEE datasets | ESA Copernicus, USGS, NASA ... via Google Earth Engine | `geedownload` |
 | geoBoundaries | Runfola et al., 2020, <https://www.geoboundaries.org> | `jableh_ca_markov` |
 | SRTM DEM, OSM roads | public sources (slope and road-distance layers) | `jableh_ca_markov` raster stages |
 | USGS Spectral Library v7 | Kokaly et al., 2017 | `USGS` |
@@ -385,7 +345,6 @@ Code licence: **MIT** for `lulc_toolkit` and `jableh_ca_markov` (each has a `LIC
 Recorded as found; none of these have been changed in the code.
 
 - **Root README** was a placeholder (acknowledgements with `......`); this file replaces it.
-- **`S2_Download_colab`**: the README example imports `sentinel2_download`, but the file is `S2.py`. The README shows a placeholder project id (`ee-xxxxx`) while `init_ee()` defaults to a real-looking project id; always pass your own. The script imports `google.colab` at the top, so it does not run outside Colab as is, despite the README saying it can be adapted. `create_zip_archive()` writes the zip inside the folder it is archiving (`zipped/`), so it may try to include the partially written archive.
 - **`USGS`**: `process_spectrum()` rewrites paths by replacing the string `D:\` after `Path(...).resolve()`, so the path handling is Windows-specific; on Linux or macOS the library paths in the CSVs need to be edited or converted first. `pyproject.toml` says `readme = "README.md"` while the file is named `readme.md` (a problem on case-sensitive systems when building). Plot axes are labelled in µm, while interpolation functions take nm by default. The library itself (5 GB) is not in the repo.
 - **`jableh_ca_markov`**: `setup.py` points to a separate repository URL (`yamenetoo/Jableh_CA_Markov`) although the project lives in this repo; `requirements.txt` mentions a `data_acquisition.py` that does not exist (acquisition is done through `lulc_toolkit`). Raster-based stages cannot be run from the repo alone because `data/raw/` is untracked.
 - **`lulc_toolkit`**: `pyproject.toml` still has placeholder metadata (`Your Name`, `YOUR_USERNAME` URLs); the README's install line uses `github.com/yamenetoo/lulc-toolkit.git`, which is not this repo; use the `#subdirectory=lulc_toolkit` form above. `examples/run_pipeline.py` has the author's own EE project id and Diyala search keyword hard-coded in its `CONFIG`; change them.
