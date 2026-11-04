@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "usgs-splib07"
-version = "2.0.0"
+version = "2.1.0"
 description = "Download the USGS Spectral Library v7, build a clean spectral library, and preprocess spectra into features (resampling, sensor convolution, derivatives, continuum removal, SAM matching)."
 readme = "README.md"
 license = {text = "MIT"}
@@ -19,7 +19,8 @@ dependencies = [
 [project.optional-dependencies]
 progress = ["tqdm"]
 plot = ["matplotlib"]
-dev = ["pytest", "tqdm", "matplotlib"]
+geo = ["rasterio"]
+dev = ["pytest", "tqdm", "matplotlib", "rasterio"]
 
 [project.scripts]
 splib07 = "usgs_splib07.cli:main"

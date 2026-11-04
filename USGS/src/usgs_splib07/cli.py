@@ -58,6 +58,22 @@ def main(argv=None) -> int:
     s.add_argument("--normalize", default=None, choices=["l2", "max", "minmax", "area"])
     s.add_argument("--continuum", action="store_true")
 
+    s = sub.add_parser("match", help="match every pixel of an image (GeoTIFF/ENVI) to a library")
+    s.add_argument("image")
+    s.add_argument("lib")
+    s.add_argument("out", help="output GeoTIFF (class_id, angle_deg, margin_deg); a *_legend.csv is written next to it")
+    s.add_argument("--scale", type=float, default=None, help="reflectance = value*scale+offset, e.g. 1e-4 for Sentinel-2 L2A")
+    s.add_argument("--offset", type=float, default=0.0)
+    s.add_argument("--nodata", type=float, default=None)
+    s.add_argument("--sensor", default=None, help="known sensor name (with --band-names) when the file has no wavelengths")
+    s.add_argument("--band-names", default=None, help="comma list of sensor band names in file order, e.g. B2,B3,B4,B8")
+    s.add_argument("--wavelengths", default=None, help="comma list of band centres in nm, or a text file with one per line")
+    s.add_argument("--fwhm", type=float, default=None, help="band width in nm if constant")
+    s.add_argument("--group", default="material", choices=["material", "chapter", "none"])
+    s.add_argument("--max-angle", type=float, default=10.0, help="degrees; pixels above it stay unmatched (0 = no limit)")
+    s.add_argument("--veg-mask", type=float, default=0.4, help="NDVI threshold to skip vegetation (-1 = off)")
+    s.add_argument("--water-mask", type=float, default=None, help="NDWI threshold to skip water")
+
     a = p.parse_args(argv)
 
     if a.cmd == "list-remote":
@@ -85,6 +101,26 @@ def main(argv=None) -> int:
         df = lib.pipeline(steps).to_frame()
         df.to_csv(a.out, index=False)
         print(f"Wrote {len(df)} rows x {df.shape[1]} columns to {a.out}")
+    elif a.cmd == "match":
+        from pathlib import Path
+
+        from .imagery import Image, match_image
+
+        wl = None
+        if a.wavelengths:
+            wp = Path(a.wavelengths)
+            txt = wp.read_text() if wp.exists() else a.wavelengths
+            wl = [float(x) for x in txt.replace(",", " ").split()]
+        names = a.band_names.split(",") if a.band_names else None
+        img = Image.read(a.image, sensor=a.sensor, band_names=names, wavelengths=wl, fwhm=a.fwhm,
+                         scale=a.scale, offset=a.offset, nodata=a.nodata)
+        lib = SpectralLibrary.load(a.lib)
+        res = match_image(img, lib, group_by=None if a.group == "none" else a.group,
+                          max_angle_deg=a.max_angle or None, mask_vegetation=None if a.veg_mask < 0 else a.veg_mask,
+                          mask_water=a.water_mask)
+        print(img)
+        print(res.to_geotiff(a.out))
+        print(res.counts().round(2).to_string(index=False))
     return 0
 
 

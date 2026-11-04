@@ -58,6 +58,45 @@ def _l8() -> Sensor:
     return Sensor("landsat8", [Band(n, (a + b) / 2.0, float(b - a), "box") for n, a, b in edges])
 
 
+def _aster() -> Sensor:
+    # ASTER VNIR + SWIR nominal band edges (nm), box shaped. Very useful for clays, carbonates, alunite.
+    edges = [
+        ("B1", 520, 600), ("B2", 630, 690), ("B3N", 760, 860), ("B4", 1600, 1700),
+        ("B5", 2145, 2185), ("B6", 2185, 2225), ("B7", 2235, 2285), ("B8", 2295, 2365), ("B9", 2360, 2430),
+    ]
+    return Sensor("aster", [Band(n, (a + b) / 2.0, float(b - a), "box") for n, a, b in edges])
+
+
+def sensor_from_wavelengths(name, centers, fwhm=None, names=None, shape: str = "gaussian") -> Sensor:
+    """Build a sensor from band centres (nm), e.g. read from a hyperspectral product's metadata.
+
+    ``fwhm`` may be one number, one value per band, or None. When None the width of each
+    band is taken as the local band spacing (a reasonable default for imaging spectrometers,
+    but prefer the real FWHM from the product metadata when you have it).
+    """
+    import numpy as np
+
+    c = np.asarray(centers, dtype=float)
+    if c.ndim != 1 or c.size == 0:
+        raise ValueError("centers must be a non-empty 1-D sequence")
+    if fwhm is None:
+        w = np.abs(np.gradient(c)) if c.size > 1 else np.array([10.0])
+    else:
+        w = np.broadcast_to(np.asarray(fwhm, dtype=float), c.shape)
+    nm = list(names) if names is not None else [f"b{i + 1}" for i in range(c.size)]
+    return Sensor(str(name), [Band(str(n), float(a), float(b), shape) for n, a, b in zip(nm, c, w)])
+
+
+def subset_sensor(sensor, band_names) -> Sensor:
+    """Keep only the named bands, in the given order (e.g. the bands of a Sentinel-2 GeoTIFF export)."""
+    s = get_sensor(sensor)
+    by_name = {b.name: b for b in s.bands}
+    missing = [n for n in band_names if n not in by_name]
+    if missing:
+        raise KeyError(f"{s.name} has no bands {missing}. Available: {s.names}")
+    return Sensor(s.name, [by_name[n] for n in band_names])
+
+
 SENSORS: Dict[str, Sensor] = {}
 
 
@@ -79,3 +118,4 @@ def get_sensor(name_or_sensor) -> Sensor:
 
 register_sensor(_s2a(), "sentinel2", "s2", "sentinel-2")
 register_sensor(_l8(), "landsat9", "oli", "l8", "l9")
+register_sensor(_aster())

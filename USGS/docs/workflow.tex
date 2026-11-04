@@ -170,4 +170,46 @@
      water-absorption band. Keeping it as \texttt{NaN} lets later steps (coverage test, band
      convolution, spectral angle) ignore those channels honestly.};
 \end{tikzpicture}
+
+% ============================================================ PAGE 3
+\begin{tikzpicture}
+  \node[font=\Large\bfseries] at (5.2,3.4) {Matching a satellite image to the library};
+  \node[font=\small, text=black!65] at (5.2,2.75) {Same steps for Sentinel-2, ASTER, or a 200-band imaging spectrometer.};
+
+  % ---- row 1: input (left to right)
+  \node[box=cDown] (m1) at (0,0)    {\textbf{1. Reflectance image}\\[1pt]\fn{GeoTIFF / ENVI / array}\\[1pt]Atmospherically corrected, from any satellite or aircraft};
+  \node[box=cDown] (m2) at (5.2,0)  {\textbf{2. Read}\\[1pt]\fn{Image.read()}\\[1pt]Scale to 0--1, nodata $\to$ \texttt{NaN}, band centres from metadata or sensor + band names};
+  \node[box=cDown] (m3) at (10.4,0) {\textbf{3. Image cube}\\[1pt]\fn{Image}\\[1pt]bands $\times$ rows $\times$ cols, plus wavelength (and FWHM) of every band};
+  \draw[arr] (m1) -- (m2); \draw[arr] (m2) -- (m3);
+
+  % ---- row 2: prepare (right to left)
+  \node[box=cCat] (m4) at (10.4,-3.8) {\textbf{4. Mask pixels}\\[1pt]\fn{mask\_vegetation  mask\_water  mask}\\[1pt]NaN, vegetation (NDVI), water, your cloud mask};
+  \node[box=cCat] (m5) at (5.2,-3.8)  {\textbf{5. Drop bad bands}\\[1pt]\fn{exclude\_nm}\\[1pt]Water-vapour windows 1340--1460 and 1790--1990 nm};
+  \node[box=cCat] (m6) at (0,-3.8)    {\textbf{6. Library to image bands}\\[1pt]\fn{to\_sensor()}\\[1pt]Same band centres and widths as the image};
+  \draw[arr] (m3) -- (m4); \draw[arr] (m4) -- (m5); \draw[arr] (m5) -- (m6);
+
+  % ---- row 3: match (left to right)
+  \node[box=cBuild] (m7) at (0,-7.6)    {\textbf{7. Spectral angle}\\[1pt]\fn{SAM, chunked matrix products}\\[1pt]Every pixel vs every library spectrum, on shared bands};
+  \node[box=cBuild] (m8) at (5.2,-7.6)  {\textbf{8. Best per material}\\[1pt]\fn{group\_by="material"}\\[1pt]Smallest angle over all samples of a material};
+  \node[box=cBuild, fill=orange!15, draw=orange!70!black] (m9) at (10.4,-7.6) {\textbf{9. Accept or reject}\\[1pt]\fn{max\_angle\_deg=10}\\[1pt]Angle too large $\to$ unmatched ($-1$)};
+  \draw[arr] (m6) -- (m7); \draw[arr] (m7) -- (m8); \draw[arr] (m8) -- (m9);
+
+  % ---- row 4: output (right to left)
+  \node[box=cFeat] (m10) at (10.4,-11.6) {\textbf{10. Three maps}\\[1pt]\fn{class\_map  angle\_deg  margin\_deg}\\[1pt]Best material, how close, how unambiguous};
+  \node[box=cFeat] (m11) at (5.2,-11.6)  {\textbf{11. Save and report}\\[1pt]\fn{to\_geotiff()  counts()}\\[1pt]GeoTIFF with the image CRS, legend CSV, pixel table};
+  \node[box=cFeat, fill=yellow!20, draw=yellow!40!black] (m12) at (0,-11.6) {\textbf{12. Validate}\\[1pt]Check sites of known mineralogy before trusting a map};
+  \draw[arr] (m9) -- (m10); \draw[arr] (m10) -- (m11); \draw[arr] (m11) -- (m12);
+
+  \begin{scope}[on background layer]
+    \node[phase=cDown,  fit=(m1)(m2)(m3), label={[plab=cDown]north west:INPUT}] {};
+    \node[phase=cCat,   fit=(m4)(m5)(m6), label={[plab=cCat]north west:PREPARE}] {};
+    \node[phase=cBuild, fit=(m7)(m8)(m9), label={[plab=cBuild, anchor=south east]north east:MATCH}] {};
+    \node[phase=cFeat,  fit=(m10)(m11)(m12), label={[plab=cFeat]north west:OUTPUT}] {};
+  \end{scope}
+
+  \node[font=\scriptsize\itshape, text=black!65, text width=14cm, align=center] at (5.2,-14.1)
+    {More narrow bands separate more minerals: a 13-band sensor blends the 2165/2205 nm clay doublet,
+     a 10 nm spectrometer resolves it.};
+\end{tikzpicture}
+
 \end{document}

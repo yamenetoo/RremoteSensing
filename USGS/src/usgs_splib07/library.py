@@ -161,6 +161,12 @@ class SpectralLibrary:
         res["angle_deg"] = np.degrees(ang[order])
         return res.reset_index(drop=True)
 
+    def match_image(self, image, **kwargs):
+        """Match every pixel of an :class:`usgs_splib07.imagery.Image` (see ``imagery.match_image``)."""
+        from .imagery import match_image
+
+        return match_image(image, self, **kwargs)
+
     # -------------------------------------------------------------- persistence (no pickle)
     def save(self, path: PathLike) -> Path:
         """Save to a compressed ``.npz`` (arrays + metadata JSON, loadable without pickle)."""
