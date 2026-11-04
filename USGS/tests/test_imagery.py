@@ -96,6 +96,21 @@ def test_library_method_equals_function(lib):
     np.testing.assert_array_equal(a.class_map, b.class_map)
 
 
+def test_probability_maps_sum_to_one_and_peak_on_truth(lib):
+    hs, t, labels = synthetic_scene(lib, HS_CENTERS, fwhm=10, noise=0.005, seed=9)
+    res = match_image(hs, lib, keep_scores=True)
+    assert res.scores.shape == (len(res.labels), hs.rows, hs.cols)
+    P = res.probability(temperature=2.0)
+    ok = res.class_map >= 0
+    np.testing.assert_allclose(np.nansum(P, axis=0)[ok], 1.0, atol=1e-3)
+    assert np.isnan(P[:, ~ok]).all()
+    assert (P.argmax(axis=0)[ok] == res.class_map[ok]).all()  # most probable material = best match
+    sub = res.probability(indices=[2, 0])
+    np.testing.assert_allclose(sub[0], P[2]); np.testing.assert_allclose(sub[1], P[0])
+    with pytest.raises(ValueError, match="keep_scores"):
+        match_image(hs, lib).probability()
+
+
 # ----------------------------------------------------------------------- file I/O (needs rasterio)
 rasterio = pytest.importorskip("rasterio")
 

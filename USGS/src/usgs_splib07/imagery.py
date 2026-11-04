@@ -219,6 +219,35 @@ class MatchResult:
     labels: List[str]
     used_wavelengths: np.ndarray
     image: Image
+    scores: Optional[np.ndarray] = None  # float16 (n_labels, rows, cols) angle in deg to EVERY material; only if keep_scores=True
+
+    def probability(self, temperature: float = 2.0, indices: Optional[Sequence[int]] = None) -> np.ndarray:
+        """Per-pixel, per-material pseudo-probability, shape (len(indices), rows, cols).
+
+        ``p_k = exp(-angle_k / T) / sum_j exp(-angle_j / T)``: a softmax over the spectral angles of all
+        materials, so the values at a pixel sum to 1. ``temperature`` (degrees) sets how sharp it is: small T
+        trusts tiny angle differences, large T spreads probability over similar materials. It is a relative
+        similarity score, not a calibrated probability. Pixels without a match (masked, or best angle over
+        ``max_angle_deg``) are NaN. Needs ``match_image(..., keep_scores=True)``.
+        """
+        if self.scores is None:
+            raise ValueError("Call match_image(..., keep_scores=True) to keep the per-material angles")
+        n = self.scores.shape[0]
+        cache = self.__dict__.setdefault("_denom_cache", {})
+        if temperature not in cache:  # the sum over all materials is the slow part: compute once per temperature
+            d = np.zeros(self.scores.shape[1:], np.float32)
+            for k in range(n):
+                d += np.exp(-self.scores[k].astype(np.float32) / temperature)
+            cache[temperature] = d
+        denom = cache[temperature]
+        idx = range(n) if indices is None else indices
+        ok = self.class_map >= 0
+        out = np.empty((len(idx),) + denom.shape, np.float32)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            for o, k in enumerate(idx):
+                p = np.exp(-self.scores[k].astype(np.float32) / temperature) / denom
+                out[o] = np.where(ok, np.nan_to_num(p, nan=0.0), np.nan)
+        return out
 
     def counts(self) -> pd.DataFrame:
         """Pixels per class with mean angle and mean margin."""
@@ -297,6 +326,7 @@ def match_image(
     mask_water: Optional[float] = None,
     min_band_fraction: float = 0.6,
     chunk: int = 4000,
+    keep_scores: bool = False,
 ) -> MatchResult:
     """Assign every pixel to the library material with the smallest spectral angle.
 
@@ -365,6 +395,7 @@ def match_image(
     class_flat = np.full(flat.shape[0], -1, dtype=np.int32)
     angle_flat = np.full(flat.shape[0], np.nan, dtype=np.float32)
     margin_flat = np.full(flat.shape[0], np.nan, dtype=np.float32)
+    scores_flat = np.full((n_groups, flat.shape[0]), np.nan, dtype=np.float16) if keep_scores else None
 
     for s in range(0, len(idx), chunk):
         sel = idx[s:s + chunk]
@@ -379,6 +410,8 @@ def match_image(
         best = np.argmin(g, axis=1)
         rows = np.arange(len(sel))
         b_ang = g[rows, best]
+        if scores_flat is not None:
+            scores_flat[:, sel] = g.T.astype(np.float16)
         if n_groups > 1:
             g2 = g.copy()
             g2[rows, best] = np.inf
@@ -394,5 +427,6 @@ def match_image(
         bad |= angle_flat > max_angle_deg
     class_flat[bad] = -1
     shape = (image.rows, image.cols)
+    scores = scores_flat.reshape((n_groups,) + shape) if scores_flat is not None else None
     return MatchResult(class_flat.reshape(shape), angle_flat.reshape(shape), margin_flat.reshape(shape),
-                       [str(x) for x in labels], wl[use], image)
+                       [str(x) for x in labels], wl[use], image, scores)
