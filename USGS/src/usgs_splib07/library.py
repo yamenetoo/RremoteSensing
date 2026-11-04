@@ -63,6 +63,47 @@ class SpectralLibrary:
             self.history + ([label] if label else []),
         )
 
+    # -------------------------------------------------------------- look up / inspect
+    def search(self, text: str, column: str = "name") -> pd.DataFrame:
+        """Rows whose ``column`` (default ``name``) contains ``text``, case-insensitive. The index is the row number."""
+        hit = self.meta[column].astype(str).str.contains(str(text), case=False, regex=False)
+        return self.meta[hit]
+
+    def materials(self) -> pd.DataFrame:
+        """One row per material: chapter and number of spectra, most spectra first."""
+        cols = [c for c in ("chapter", "chapter_name") if c in self.meta.columns]
+        out = self.meta.groupby(["material"] + cols).size().rename("n_spectra").reset_index()
+        return out.sort_values(["n_spectra", "material"], ascending=[False, True]).reset_index(drop=True)
+
+    def spectrum(self, which) -> np.ndarray:
+        """One spectrum as a 1-D array on this library's wavelengths. ``which`` is a row number or an exact ``name``."""
+        if isinstance(which, (int, np.integer)):
+            return self.X[int(which)].copy()
+        idx = np.flatnonzero(self.meta["name"].to_numpy() == which)
+        if len(idx) == 0:
+            near = self.search(str(which).split("_")[0])["name"].head(5).tolist()
+            raise KeyError(f"No spectrum named {which!r}. Similar names: {near}")
+        return self.X[idx[0]].copy()
+
+    def plot(self, which=None, ax=None, max_n: int = 10, legend: bool = True):
+        """Line plot of spectra (needs matplotlib). ``which``: row numbers / names, or text to search in names; default the first ``max_n``."""
+        import matplotlib.pyplot as plt
+
+        if which is None:
+            rows = list(range(min(max_n, len(self))))
+        elif isinstance(which, str):
+            rows = list(self.search(which).index[:max_n])
+        else:
+            rows = [w if isinstance(w, (int, np.integer)) else int(np.flatnonzero(self.meta["name"].to_numpy() == w)[0]) for w in which]
+        ax = ax or plt.subplots(figsize=(9, 4))[1]
+        for r in rows:
+            ax.plot(self.wavelengths, self.X[r], lw=1.2, label=str(self.meta["name"].iloc[r]))
+        ax.set_xlabel("wavelength (nm)" if self.band_names is None else "band centre (nm)")
+        ax.set_ylabel("reflectance")
+        if legend and rows:
+            ax.legend(fontsize=7, frameon=False)
+        return ax
+
     # -------------------------------------------------------------- selection / QC
     def select(self, mask=None, **filters) -> "SpectralLibrary":
         """Subset by boolean mask or by metadata equality / membership.
@@ -85,10 +126,12 @@ class SpectralLibrary:
         return self.select(mask=frac >= min_valid_fraction)
 
     def clip(self, lo: Optional[float] = 0.0, hi: Optional[float] = None) -> "SpectralLibrary":
+        """Limit values to ``[lo, hi]`` (default: remove negative noise)."""
         return self._new(np.clip(self.X, lo, hi), label=f"clip({lo},{hi})")
 
     # -------------------------------------------------------------- preprocessing
     def resample(self, wavelengths, fwhm: Optional[float] = None) -> "SpectralLibrary":
+        """Interpolate onto a new wavelength grid in nm; optional ``fwhm`` smooths with a Gaussian of that width first."""
         wl = np.asarray(wavelengths, float)
         return self._new(pp.resample(self.wavelengths, self.X, wl, fwhm), wl, None, label=f"resample({wl[0]:.0f}-{wl[-1]:.0f},{len(wl)})")
 
@@ -98,18 +141,23 @@ class SpectralLibrary:
         return self._new(Xb, np.array(s.centers), s.names, label=f"to_sensor({s.name})")
 
     def smooth(self, window: int = 11, poly: int = 3) -> "SpectralLibrary":
+        """Savitzky-Golay smoothing; ``window`` is in channels and must be odd."""
         return self._new(pp.smooth(self.wavelengths, self.X, window, poly), label=f"smooth({window},{poly})")
 
     def derivative(self, order: int = 1, window: int = 11, poly: int = 3) -> "SpectralLibrary":
+        """Savitzky-Golay derivative with respect to wavelength (reflectance per nm^order)."""
         return self._new(pp.derivative(self.wavelengths, self.X, order, window, poly), label=f"derivative({order})")
 
     def continuum_removed(self) -> "SpectralLibrary":
+        """Divide each spectrum by its upper convex hull, so absorption features become dips below 1."""
         return self._new(pp.continuum_removal(self.wavelengths, self.X), label="continuum_removal")
 
     def snv(self) -> "SpectralLibrary":
+        """Standard normal variate: subtract each spectrum's mean and divide by its standard deviation."""
         return self._new(pp.snv(self.X), label="snv")
 
     def normalized(self, method: str = "l2") -> "SpectralLibrary":
+        """Scale each spectrum: ``l2`` (unit length), ``max``, ``minmax`` or ``area``."""
         return self._new(pp.normalize(self.X, method), label=f"normalize({method})")
 
     def apply(self, fn: Callable[[np.ndarray, np.ndarray], np.ndarray], label: str = "custom") -> "SpectralLibrary":
@@ -141,9 +189,17 @@ class SpectralLibrary:
         return pd.DataFrame(out, index=self.meta.index)
 
     def to_frame(self, include_meta: bool = True) -> pd.DataFrame:
+        """DataFrame with one row per spectrum (metadata columns first, then one column per band)."""
         cols = self.band_names or [f"{w:.1f}" for w in self.wavelengths]
         spec = pd.DataFrame(self.X, columns=cols)
         return pd.concat([self.meta, spec], axis=1) if include_meta else spec
+
+    def to_csv(self, path: PathLike, include_meta: bool = True) -> Path:
+        """Write the library as a CSV (one row per spectrum, one column per band)."""
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.to_frame(include_meta).to_csv(path, index=False)
+        return path
 
     def match(self, query, k: int = 5, query_wavelengths=None) -> pd.DataFrame:
         """Top-``k`` library spectra closest to ``query`` by spectral angle.
@@ -161,12 +217,6 @@ class SpectralLibrary:
         res["angle_deg"] = np.degrees(ang[order])
         return res.reset_index(drop=True)
 
-    def match_image(self, image, **kwargs):
-        """Match every pixel of an :class:`usgs_splib07.imagery.Image` (see ``imagery.match_image``)."""
-        from .imagery import match_image
-
-        return match_image(image, self, **kwargs)
-
     # -------------------------------------------------------------- persistence (no pickle)
     def save(self, path: PathLike) -> Path:
         """Save to a compressed ``.npz`` (arrays + metadata JSON, loadable without pickle)."""
@@ -182,6 +232,7 @@ class SpectralLibrary:
 
     @classmethod
     def load(cls, path: PathLike) -> "SpectralLibrary":
+        """Load a library written by :meth:`save` (no pickle is used)."""
         from io import StringIO
         with np.load(path, allow_pickle=False) as z:
             meta = pd.read_json(StringIO(str(z["meta"])), orient="split")

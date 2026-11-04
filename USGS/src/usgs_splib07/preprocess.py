@@ -235,6 +235,7 @@ def normalized_difference(wl, X, a_nm: float, b_nm: float) -> np.ndarray:
 
 
 def band_ratio(wl, X, a_nm: float, b_nm: float) -> np.ndarray:
+    """Ratio A / B using the channels nearest to the two wavelengths."""
     X = _as2d(X)
     with np.errstate(invalid="ignore", divide="ignore"):
         return X[:, _nearest(wl, a_nm)] / X[:, _nearest(wl, b_nm)]

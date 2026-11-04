@@ -4,10 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "usgs-splib07"
-version = "2.1.0"
-description = "Download the USGS Spectral Library v7, build a clean spectral library, and preprocess spectra into features (resampling, sensor convolution, derivatives, continuum removal, SAM matching)."
+version = "3.0.0"
+description = "Python API for the USGS Spectral Library Version 7: download once, search spectra, and preprocess them (resampling, sensor bands, smoothing, derivatives, continuum removal, normalisation, spectral angle)."
+keywords = ["USGS", "spectral library", "splib07", "spectroscopy", "remote sensing", "hyperspectral", "minerals", "preprocessing"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: GIS",
+]
 readme = "README.md"
 license = {text = "MIT"}
+authors = [{name = "Mohamad Yamen Al-Mohamad", email = "yamenmohamad@tabrizu.ac.ir"}]
+maintainers = [{name = "Mohamad Yamen Al-Mohamad", email = "yamenmohamad@tabrizu.ac.ir"}]
 requires-python = ">=3.9"
 dependencies = [
     "numpy>=1.22",
@@ -19,8 +28,11 @@ dependencies = [
 [project.optional-dependencies]
 progress = ["tqdm"]
 plot = ["matplotlib"]
-geo = ["rasterio"]
-dev = ["pytest", "tqdm", "matplotlib", "rasterio"]
+dev = ["pytest", "tqdm", "matplotlib"]
+
+[project.urls]
+Homepage = "https://github.com/yamenetoo/RremoteSensing/tree/main/USGS"
+Issues = "https://github.com/yamenetoo/RremoteSensing/issues"
 
 [project.scripts]
 splib07 = "usgs_splib07.cli:main"

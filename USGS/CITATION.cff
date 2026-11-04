@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it, and also cite the USGS Spectral Library Version 7 data."
+title: "usgs-splib07: a Python API for the USGS Spectral Library Version 7"
+version: 3.0.0
+type: software
+license: MIT
+repository-code: "https://github.com/yamenetoo/RremoteSensing/tree/main/USGS"
+authors:
+  - family-names: "Al-Mohamad"
+    given-names: "Mohamad Yamen"
+    email: "yamenmohamad@tabrizu.ac.ir"
+    orcid: "https://orcid.org/0009-0009-1665-7203"
+    affiliation: "Department of Statistics, University of Tabriz, Tabriz, Iran"
+references:
+  - type: data
+    title: "USGS Spectral Library Version 7"
+    authors:
+      - family-names: "Kokaly"
+        given-names: "Raymond F."
+    year: 2017
+    publisher:
+      name: "U.S. Geological Survey"
+    doi: "10.3133/ds1035"
+    notes: "U.S. Geological Survey Data Series 1035"

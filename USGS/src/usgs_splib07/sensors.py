@@ -108,6 +108,7 @@ def register_sensor(sensor: Sensor, *aliases: str) -> None:
 
 
 def get_sensor(name_or_sensor) -> Sensor:
+    """Look up a sensor by name or alias (``sentinel2a``, ``landsat8``, ``aster``, ...); a Sensor object is returned unchanged."""
     if isinstance(name_or_sensor, Sensor):
         return name_or_sensor
     key = str(name_or_sensor).lower()
