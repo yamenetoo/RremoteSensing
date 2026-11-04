@@ -68,6 +68,12 @@ def _build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--host", default="127.0.0.1")
     sv.add_argument("--port", type=int, default=8000)
 
+    g = sub.add_parser("gui", help="run the REST API and open the web interface (ar / fa / en)")
+    g.add_argument("--host", default="127.0.0.1")
+    g.add_argument("--port", type=int, default=8000)
+    g.add_argument("--lang", choices=["ar", "fa", "en"], default=None)
+    g.add_argument("--no-browser", action="store_true")
+
     sub.add_parser("about", help="author and contact information")
     return p
 
@@ -133,6 +139,17 @@ def main(argv=None) -> int:
         elif args.cmd == "serve":
             import uvicorn
 
+            uvicorn.run("geedownload.api:app", host=args.host, port=args.port)
+        elif args.cmd == "gui":
+            import threading
+            import webbrowser
+
+            import uvicorn
+
+            url = f"http://{args.host}:{args.port}/app" + (f"?lang={args.lang}" if args.lang else "")
+            print("GUI:", url)
+            if not args.no_browser:
+                threading.Timer(1.5, webbrowser.open, args=(url,)).start()
             uvicorn.run("geedownload.api:app", host=args.host, port=args.port)
         elif args.cmd == "about":
             from . import about

@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>geedownload</title>
+<link rel="icon" href="/logo.png">
+<style>
+:root{--navy:#12304f;--teal:#0e9aa7;--bg:#f4f7fa;--card:#fff;--line:#d5dee8;--txt:#1b2733;--mut:#5d6b7a;--err:#b3261e;--ok:#1b7f4b}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1720;--card:#17222d;--line:#2b3a49;--txt:#e6edf3;--mut:#9fb0c0;--navy:#8fc4ee;--err:#ff8a80;--ok:#5fd394}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.55 "Segoe UI",Tahoma,"Noto Naskh Arabic","Noto Sans Arabic",Arial,sans-serif}
+header{background:linear-gradient(135deg,#12304f,#0e6f7a);color:#fff;padding:14px 16px}
+.bar{max-width:1000px;margin:auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{height:44px;background:#fff;border-radius:8px;padding:4px}
+.brand small{display:block;opacity:.85}
+.langs button{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6);padding:5px 12px;border-radius:999px;cursor:pointer;font:inherit}
+.langs button[aria-pressed=true]{background:#fff;color:#12304f;font-weight:600}
+main{max-width:1000px;margin:auto;padding:16px}
+.key{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;color:var(--mut)}
+.key input{max-width:260px}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--txt);padding:8px 14px;border-radius:8px;cursor:pointer;font:inherit}
+nav button[aria-selected=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+section.tab{display:none;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+section.tab.on{display:block}
+h2{margin:.1em 0 .4em;color:var(--navy);font-size:1.25rem}
+.hint{color:var(--mut);margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+label{display:block;font-size:.9rem;color:var(--mut)}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--txt);font:inherit}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:10px 0}
+.row>*{flex:1 1 180px}.row>.fit{flex:0 0 auto}
+.checks{display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 0}
+.checks label{display:flex;gap:6px;align-items:center;color:var(--txt)}
+.checks input{width:auto}
+button.primary,a.btn,button.sec{display:inline-block;padding:8px 16px;border-radius:8px;border:1px solid var(--teal);cursor:pointer;font:inherit;text-decoration:none}
+button.primary{background:var(--teal);color:#fff}
+button.sec,a.btn{background:transparent;color:var(--teal)}
+button:disabled{opacity:.6;cursor:wait}
+.card{border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.card .info{flex:1 1 240px}
+.card svg{width:110px;height:80px;background:var(--bg);border-radius:6px;border:1px solid var(--line)}
+.card svg path{fill:rgba(14,154,167,.35);stroke:var(--teal);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.sel{outline:2px solid var(--teal)}
+.msg{margin:8px 0;min-height:1.4em}.msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:var(--bg);color:var(--txt);cursor:pointer;font:inherit;font-size:.85rem}
+.ltr{direction:ltr;unicode-bidi:isolate;text-align:start}
+.status{font-weight:600}.st-done{color:var(--ok)}.st-failed{color:var(--err)}.st-running,.st-queued{color:var(--teal)}
+details{margin-top:6px}summary{cursor:pointer;color:var(--teal)}
+ul.files{list-style:none;padding:0;margin:6px 0}ul.files li{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;padding:2px 0;border-bottom:1px dashed var(--line)}
+.preview img,.out img{max-width:100%;border:1px solid var(--line);border-radius:8px;margin-top:8px}
+footer{max-width:1000px;margin:auto;padding:12px 16px 30px;color:var(--mut);font-size:.85rem;text-align:center}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <div class="brand"><img src="/logo.png" alt="geedownload"><div><strong>geedownload</strong><small data-i18n="subtitle"></small></div></div>
+  <div class="langs" role="group" aria-label="language">
+    <button data-lang="ar">العربية</button><button data-lang="fa">فارسی</button><button data-lang="en">English</button>
+  </div>
+</div></header>
+<main>
+  <div class="key"><label for="apikey" data-i18n="api_key"></label>
+    <input id="apikey" type="password" autocomplete="off" class="ltr" data-i18n-ph="api_key_hint"></div>
+
+  <nav role="tablist">
+    <button data-tab="search" data-i18n="tab_search"></button>
+    <button data-tab="download" data-i18n="tab_download"></button>
+    <button data-tab="jobs" data-i18n="tab_jobs"></button>
+    <button data-tab="maps" data-i18n="tab_maps"></button>
+    <button data-tab="about" data-i18n="tab_about"></button>
+  </nav>
+
+  <!-- 1 search -->
+  <section class="tab" id="tab-search">
+    <h2 data-i18n="search_title"></h2><p class="hint" data-i18n="search_hint"></p>
+    <form id="searchForm">
+      <div class="row">
+        <div><input id="q" required minlength="2" data-i18n-ph="search_placeholder"></div>
+        <div class="fit"><button class="primary" data-i18n="search_btn"></button></div>
+      </div>
+      <div class="grid">
+        <div><label data-i18n="country_codes"></label><input id="cc" class="ltr" data-i18n-ph="country_codes_ph"></div>
+        <div><label data-i18n="feature_type"></label><select id="ft">
+          <option value="" data-i18n="ft_any"></option><option value="country" data-i18n="ft_country"></option>
+          <option value="state" data-i18n="ft_state"></option><option value="city" data-i18n="ft_city"></option>
+          <option value="settlement" data-i18n="ft_settlement"></option></select></div>
+      </div>
+    </form>
+    <div class="msg" id="searchMsg"></div><div id="results"></div>
+  </section>
+
+  <!-- 2 download -->
+  <section class="tab" id="tab-download">
+    <h2 data-i18n="dl_title"></h2>
+    <p><strong data-i18n="selected_area"></strong>: <span id="areaLabel" class="ltr"></span></p>
+    <div class="row"><div><label data-i18n="or_bbox"></label><input id="bbox" class="ltr" data-i18n-ph="bbox_ph"></div></div>
+    <div class="grid">
+      <div><label data-i18n="dataset"></label><select id="dataset"></select>
+        <small class="ltr" id="dsInfo"></small></div>
+      <div><label data-i18n="start_date"></label><input type="date" id="start"></div>
+      <div><label data-i18n="end_date"></label><input type="date" id="end"></div>
+      <div><label data-i18n="cloud_max"></label><input type="number" id="cloud" min="0" max="100" value="20"></div>
+      <div><label data-i18n="reducer"></label><select id="reducer">
+        <option value="" data-i18n="reducer_default"></option>
+        <option>median</option><option>mean</option><option>min</option><option>max</option>
+        <option>sum</option><option>mode</option><option>first</option><option>mosaic</option></select></div>
+      <div><label data-i18n="scale"></label><input type="number" id="scale" min="1" class="ltr" data-i18n-ph="scale_ph"></div>
+      <div><label data-i18n="crs"></label><input id="crs" class="ltr" data-i18n-ph="crs_ph"></div>
+      <div><label data-i18n="buffer"></label><input type="number" id="buffer" min="0" value="0"></div>
+      <div><label data-i18n="max_images"></label><input type="number" id="maxImages" min="1" max="50" value="10"></div>
+    </div>
+    <div class="row"><div><label data-i18n="bands"></label><input id="bands" class="ltr" data-i18n-ph="bands_ph"></div></div>
+    <label data-i18n="bands_groups"></label><div class="chips" id="chips"></div>
+    <div class="checks">
+      <label><input type="checkbox" id="maskClouds"><span data-i18n="opt_mask_clouds"></span></label>
+      <label><input type="checkbox" id="applyScale"><span data-i18n="opt_apply_scale"></span></label>
+      <label><input type="checkbox" id="clip" checked><span data-i18n="opt_clip"></span></label>
+      <label><input type="checkbox" id="perImage"><span data-i18n="opt_per_image"></span></label>
+      <label><input type="checkbox" id="makeMap" checked><span data-i18n="opt_make_map"></span></label>
+    </div>
+    <button class="primary" id="startJob" data-i18n="start_job"></button>
+    <div class="msg" id="dlMsg"></div>
+  </section>
+
+  <!-- 3 jobs -->
+  <section class="tab" id="tab-jobs">
+    <h2 data-i18n="jobs_title"></h2>
+    <button class="sec" id="refreshJobs" data-i18n="refresh"></button>
+    <div id="jobsList"></div>
+  </section>
+
+  <!-- 4 maps -->
+  <section class="tab" id="tab-maps">
+    <h2 data-i18n="maps_title"></h2><p class="hint" data-i18n="map_note"></p>
+    <h3 data-i18n="map_from_job"></h3>
+    <div class="grid">
+      <div><label data-i18n="job"></label><select id="mapJob"></select></div>
+      <div><label data-i18n="map_bands"></label><input id="mBands" class="ltr" data-i18n-ph="map_bands_ph"></div>
+      <div><label data-i18n="map_cmap"></label><select id="mCmap"><option value="">auto</option>
+        <option>viridis</option><option>RdYlGn</option><option>gray</option><option>terrain</option><option>magma</option><option>Blues</option></select></div>
+      <div><label data-i18n="map_classes"></label><select id="mClasses"><option value="" data-i18n="none"></option>
+        <option>worldcover</option><option>dynamic_world</option></select></div>
+      <div><label data-i18n="map_title"></label><input id="mTitle"></div>
+      <div><label data-i18n="map_country"></label><input id="mCountry" class="ltr"></div>
+      <div><label data-i18n="map_dpi"></label><input type="number" id="mDpi" value="150" min="72" max="400"></div>
+    </div>
+    <p><button class="primary" id="renderJobMap" data-i18n="render_map"></button></p>
+    <div class="msg" id="mapMsg"></div><div class="out" id="mapOut"></div>
+    <hr>
+    <h3 data-i18n="area_map_title"></h3>
+    <div class="grid">
+      <div><label data-i18n="area_text"></label><input id="aName" class="ltr"></div>
+      <div><label data-i18n="extent"></label><select id="aExtent"><option value="area" data-i18n="extent_area"></option>
+        <option value="country" data-i18n="extent_country"></option></select></div>
+      <div><label data-i18n="map_country"></label><input id="aCountry" class="ltr"></div>
+      <div><label data-i18n="map_dpi"></label><input type="number" id="aDpi" value="150" min="72" max="400"></div>
+    </div>
+    <div class="checks"><label><input type="checkbox" id="aAdmin1"><span data-i18n="opt_admin1"></span></label></div>
+    <button class="primary" id="renderAreaMap" data-i18n="render_area_map"></button>
+    <div class="msg" id="areaMsg"></div><div class="out" id="areaOut"></div>
+  </section>
+
+  <!-- about -->
+  <section class="tab" id="tab-about">
+    <h2 data-i18n="about_title"></h2>
+    <p data-i18n="about_text"></p>
+    <p><strong data-i18n="version"></strong>: <span id="ver" class="ltr"></span></p>
+    <p><strong data-i18n="author"></strong>: <span id="auName"></span></p>
+    <p><strong data-i18n="affiliation"></strong>: <span class="ltr" id="auAff"></span></p>
+    <p><strong data-i18n="email"></strong>: <a class="ltr" id="auMail"></a></p>
+    <p class="ltr" id="auLinks"></p>
+    <p><a class="btn" href="/docs" target="_blank" rel="noopener" data-i18n="api_docs"></a></p>
+  </section>
+</main>
+<footer>geedownload · MIT</footer>
+
+<script>
+"use strict";
+const I18N = /*I18N_JSON*/{};
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+let lang = "en", selected = null, datasets = [], aboutInfo = null, pollTimer = null;
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+};
+const t = k => (I18N[lang] && I18N[lang][k]) || (I18N.en && I18N.en[k]) || k;
+
+function applyLang(l) {
+  if (!I18N[l]) l = "en";
+  lang = l;
+  const h = document.documentElement;
+  h.lang = l; h.dir = (l === "ar" || l === "fa") ? "rtl" : "ltr";
+  store.set("gd_lang", l);
+  $$("[data-i18n]").forEach(e => e.textContent = t(e.dataset.i18n));
+  $$("[data-i18n-ph]").forEach(e => e.placeholder = t(e.dataset.i18nPh));
+  $$("[data-lang]").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === l));
+  document.title = "geedownload — " + t("subtitle");
+  renderAreaLabel(); renderAbout();
+  if (jobsCache) renderJobs(jobsCache);
+}
+
+function showTab(n) {
+  $$("section.tab").forEach(s => s.classList.toggle("on", s.id === "tab-" + n));
+  $$("nav button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === n));
+  if (n === "jobs") loadJobs();
+  if (n === "maps") loadJobs();
+  location.hash = n;
+}
+
+function msg(id, text, cls) { const e = $(id); e.textContent = text || ""; e.className = "msg " + (cls || ""); }
+
+async function api(path, opts = {}, as = "json") {
+  const headers = Object.assign({}, opts.headers || {});
+  const key = $("#apikey").value.trim();
+  if (key) headers["X-API-Key"] = key;
+  if (opts.body && typeof opts.body === "object") { headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(opts.body); }
+  let r;
+  try { r = await fetch(path, Object.assign({}, opts, { headers })); }
+  catch (e) { throw new Error(t("network_error")); }
+  if (r.status === 401) throw new Error(t("unauthorized"));
+  if (!r.ok) {
+    let d = r.statusText;
+    try { const j = await r.json(); d = typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail || j); } catch (e) {}
+    throw new Error(d);
+  }
+  return as === "blob" ? r.blob() : r.json();
+}
+
+function saveBlob(blob, name) {
+  const u = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 10000);
+}
+async function fetchAndSave(path, name) {
+  try { saveBlob(await api(path, {}, "blob"), name); } catch (e) { alert(e.message); }
+}
+
+/* ---------- search ---------- */
+function geomPath(g, bbox) {
+  const [w, s, e, n] = bbox, W = 110, H = 80, sx = e - w || 1, sy = n - s || 1, k = Math.min((W - 8) / sx, (H - 8) / sy);
+  const ox = (W - sx * k) / 2, oy = (H - sy * k) / 2;
+  const pt = c => (ox + (c[0] - w) * k).toFixed(1) + "," + (H - oy - (c[1] - s) * k).toFixed(1);
+  const rings = g.type === "Polygon" ? [g.coordinates] : g.type === "MultiPolygon" ? g.coordinates : [];
+  return rings.map(p => p.map(r => "M" + r.map(pt).join("L") + "Z").join("")).join("");
+}
+let lastPlaces = [], lastQuery = "", lastFiltered = false;
+$("#searchForm").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const q = $("#q").value.trim(), btn = ev.submitter || $("#searchForm button");
+  const p = new URLSearchParams({ q, limit: 8, include_geometry: true });
+  if ($("#cc").value.trim()) p.set("country_codes", $("#cc").value.trim());
+  if ($("#ft").value) p.set("feature_type", $("#ft").value);
+  btn.disabled = true; msg("#searchMsg", t("searching")); $("#results").textContent = "";
+  try {
+    lastPlaces = await api("/search?" + p); lastQuery = q; lastFiltered = p.has("country_codes") || p.has("feature_type");
+    msg("#searchMsg", ""); renderResults();
+  } catch (e) { msg("#searchMsg", /404|not found/i.test(e.message) ? t("no_results") : e.message, "err"); }
+  btn.disabled = false;
+});
+function renderResults() {
+  const box = $("#results"); box.textContent = "";
+  lastPlaces.forEach(pl => {
+    const c = document.createElement("div"); c.className = "card" + (selected && selected.osm_id === pl.osm_id ? " sel" : "");
+    const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 110 80");
+    if (pl.geometry) { const pa = document.createElementNS(ns, "path"); pa.setAttribute("d", geomPath(pl.geometry, pl.bbox)); svg.appendChild(pa); }
+    const info = document.createElement("div"); info.className = "info";
+    const b = document.createElement("strong"); b.textContent = pl.name; b.className = "ltr";
+    const d = document.createElement("div"); d.className = "ltr"; d.style.color = "var(--mut)"; d.textContent = pl.display_name;
+    const k = document.createElement("div"); k.textContent = (pl.has_polygon ? t("polygon") : t("bbox_only")) + " · " + (pl.type || pl.category || "");
+    info.append(b, d, k);
+    const use = document.createElement("button"); use.className = "primary"; use.textContent = selected && selected.osm_id === pl.osm_id ? "✓ " + t("selected") : t("use_area");
+    use.onclick = () => {
+      selected = { name: pl.name, osm_id: pl.osm_id,
+        area: lastFiltered ? pl.display_name : lastQuery, pick: lastFiltered ? 0 : pl.pick };
+      renderAreaLabel(); renderResults(); showTab("download");
+    };
+    const shp = document.createElement("button"); shp.className = "sec"; shp.textContent = t("download_boundary");
+    shp.onclick = () => fetchAndSave("/boundary?" + new URLSearchParams({ q: lastFiltered ? pl.display_name : lastQuery, pick: lastFiltered ? 0 : pl.pick }), (pl.name || "area") + "_boundary.zip");
+    const act = document.createElement("div"); act.style.display = "flex"; act.style.flexDirection = "column"; act.style.gap = "6px"; act.append(use, shp);
+    c.append(svg, info, act); box.appendChild(c);
+  });
+}
+function renderAreaLabel() { $("#areaLabel").textContent = selected ? selected.name : t("none_selected"); }
+
+/* ---------- datasets / download ---------- */
+function fillDatasets() {
+  const s = $("#dataset"); s.textContent = "";
+  datasets.forEach(d => { const o = document.createElement("option"); o.value = d.key; o.textContent = d.key + " — " + d.title; s.appendChild(o); });
+  dsChanged();
+}
+function dsChanged() {
+  const d = datasets.find(x => x.key === $("#dataset").value); if (!d) return;
+  $("#dsInfo").textContent = t("dataset_info") + ": " + d.collection_id + (d.scale_m ? " · " + d.scale_m + " m" : "");
+  const ch = $("#chips"); ch.textContent = "";
+  Object.keys(d.band_groups || {}).concat(d.default_bands || []).forEach(n => {
+    const c = document.createElement("button"); c.type = "button"; c.className = "chip ltr"; c.textContent = n;
+    c.onclick = () => { const i = $("#bands"); i.value = i.value.trim() ? i.value.trim().replace(/,\s*$/, "") + ", " + n : n; };
+    ch.appendChild(c);
+  });
+}
+$("#dataset").addEventListener("change", dsChanged);
+
+$("#startJob").addEventListener("click", async () => {
+  let area, pick = 0;
+  const bb = $("#bbox").value.trim();
+  if (bb) { area = bb.split(/[\s,;]+/).filter(Boolean).map(Number); if (area.length !== 4 || area.some(isNaN)) return msg("#dlMsg", t("need_area"), "err"); }
+  else if (selected) { area = selected.area; pick = selected.pick; }
+  else return msg("#dlMsg", t("need_area"), "err");
+  const num = id => $(id).value === "" ? null : Number($(id).value);
+  const body = { area, pick, dataset: $("#dataset").value, start: $("#start").value || null, end: $("#end").value || null,
+    cloud_max: num("#cloud"), reducer: $("#reducer").value || null, scale: num("#scale"), crs: $("#crs").value.trim() || null,
+    buffer_m: num("#buffer") || 0, max_images: num("#maxImages") || 10,
+    bands: $("#bands").value.split(/[\s,;]+/).filter(Boolean), clip: $("#clip").checked, mask_clouds: $("#maskClouds").checked,
+    apply_scale: $("#applyScale").checked, per_image: $("#perImage").checked, make_map: $("#makeMap").checked };
+  if (!body.bands.length) body.bands = null;
+  $("#startJob").disabled = true; msg("#dlMsg", "…");
+  try { const r = await api("/jobs/download", { method: "POST", body }); msg("#dlMsg", t("job_started") + ": " + r.job_id, "ok"); showTab("jobs"); }
+  catch (e) { msg("#dlMsg", t("error") + ": " + e.message, "err"); }
+  $("#startJob").disabled = false;
+});
+
+/* ---------- jobs ---------- */
+let jobsCache = null;
+async function loadJobs() {
+  clearTimeout(pollTimer);
+  try {
+    const list = await api("/jobs");
+    list.sort((a, b) => b.created - a.created);
+    jobsCache = await Promise.all(list.map(j => api("/jobs/" + j.job_id).catch(() => j)));
+    renderJobs(jobsCache);
+    if (jobsCache.some(j => j.status === "queued" || j.status === "running")) pollTimer = setTimeout(loadJobs, 5000);
+  } catch (e) { $("#jobsList").textContent = e.message; }
+}
+function renderJobs(jobs) {
+  const box = $("#jobsList"); box.textContent = "";
+  if (!jobs.length) box.textContent = t("no_jobs");
+  jobs.forEach(j => {
+    const c = document.createElement("div"); c.className = "card"; c.style.display = "block";
+    const h = document.createElement("div");
+    const st = document.createElement("span"); st.className = "status st-" + j.status; st.textContent = t("st_" + j.status);
+    const nm = document.createElement("span"); nm.className = "ltr";
+    nm.textContent = "  " + j.job_id + (j.request && typeof j.request.area === "string" ? " · " + j.request.area : "") + (j.request ? " · " + j.request.dataset : "");
+    h.append(t("status") + ": ", st, nm); c.appendChild(h);
+    if (j.error) { const e = document.createElement("div"); e.className = "msg err ltr"; e.textContent = j.error; c.appendChild(e); }
+    if (j.files && j.files.length) {
+      const dt = document.createElement("details"), sm = document.createElement("summary"); sm.textContent = t("files") + " (" + j.files.length + ")";
+      const ul = document.createElement("ul"); ul.className = "files";
+      j.files.forEach(f => {
+        const li = document.createElement("li"), s = document.createElement("span"); s.className = "ltr"; s.textContent = f;
+        const b = document.createElement("button"); b.className = "chip"; b.textContent = t("download");
+        b.onclick = () => fetchAndSave(`/jobs/${j.job_id}/files/${f}`, f.split("/").pop());
+        li.append(s, b); ul.appendChild(li);
+      });
+      dt.append(sm, ul); c.appendChild(dt);
+      const pv = j.files.find(f => f.endsWith("preview.jpg"));
+      if (pv) {
+        const pdiv = document.createElement("div"); pdiv.className = "preview"; c.appendChild(pdiv);
+        api(`/jobs/${j.job_id}/files/${pv}`, {}, "blob").then(bl => { const im = new Image(); im.alt = t("preview"); im.src = URL.createObjectURL(bl); pdiv.appendChild(im); }).catch(() => {});
+      }
+    }
+    const act = document.createElement("div"); act.style.marginTop = "8px"; act.style.display = "flex"; act.style.gap = "8px"; act.style.flexWrap = "wrap";
+    if (j.status === "done") {
+      const z = document.createElement("button"); z.className = "sec"; z.textContent = t("archive");
+      z.onclick = () => fetchAndSave(`/jobs/${j.job_id}/archive.zip`, j.job_id + ".zip"); act.appendChild(z);
+    }
+    const del = document.createElement("button"); del.className = "sec"; del.textContent = t("delete"); del.style.color = "var(--err)"; del.style.borderColor = "var(--err)";
+    del.onclick = async () => { if (!confirm(t("confirm_delete"))) return; try { await api("/jobs/" + j.job_id, { method: "DELETE" }); loadJobs(); } catch (e) { alert(e.message); } };
+    act.appendChild(del); c.appendChild(act); box.appendChild(c);
+  });
+  const sel = $("#mapJob"), cur = sel.value; sel.textContent = "";
+  const done = jobs.filter(j => j.status === "done");
+  if (!done.length) { const o = document.createElement("option"); o.textContent = t("no_done_jobs"); o.value = ""; sel.appendChild(o); }
+  done.forEach(j => { const o = document.createElement("option"); o.value = j.job_id; o.textContent = j.job_id + (j.request ? " · " + (typeof j.request.area === "string" ? j.request.area : "bbox") : ""); sel.appendChild(o); });
+  if (cur) sel.value = cur;
+}
+$("#refreshJobs").onclick = loadJobs;
+
+/* ---------- maps ---------- */
+async function showMap(outId, msgId, path, body, btn) {
+  const out = $(outId); out.textContent = ""; btn.disabled = true; msg(msgId, t("rendering"));
+  try {
+    const bl = await api(path, { method: "POST", body }, "blob");
+    const url = URL.createObjectURL(bl), im = new Image(); im.src = url; im.alt = "map";
+    const a = document.createElement("a"); a.className = "btn"; a.href = url; a.download = "map.jpg"; a.textContent = t("save_image");
+    out.append(a, document.createElement("br"), im); msg(msgId, t("done"), "ok");
+  } catch (e) { msg(msgId, t("error") + ": " + e.message, "err"); }
+  btn.disabled = false;
+}
+$("#renderJobMap").onclick = ev => {
+  const id = $("#mapJob").value; if (!id) return msg("#mapMsg", t("no_done_jobs"), "err");
+  const bands = $("#mBands").value.split(/[\s,;]+/).filter(Boolean);
+  const body = { dpi: Number($("#mDpi").value) || 150 };
+  if (bands.length) body.bands = bands;
+  if ($("#mCmap").value) body.cmap = $("#mCmap").value;
+  if ($("#mClasses").value) body.classes = $("#mClasses").value;
+  if ($("#mTitle").value.trim()) body.title = $("#mTitle").value.trim();
+  if ($("#mCountry").value.trim()) body.country = $("#mCountry").value.trim();
+  showMap("#mapOut", "#mapMsg", `/jobs/${id}/map`, body, ev.currentTarget);
+};
+$("#renderAreaMap").onclick = ev => {
+  const nm = $("#aName").value.trim() || (selected && selected.area); if (!nm) return msg("#areaMsg", t("need_area"), "err");
+  const body = { area: nm, extent: $("#aExtent").value, admin1: $("#aAdmin1").checked, dpi: Number($("#aDpi").value) || 150 };
+  if (!$("#aName").value.trim() && selected) body.pick = selected.pick;
+  if ($("#aCountry").value.trim()) body.country = $("#aCountry").value.trim();
+  showMap("#areaOut", "#areaMsg", "/maps/area", body, ev.currentTarget);
+};
+
+/* ---------- about ---------- */
+function renderAbout() {
+  if (!aboutInfo) return;
+  const a = aboutInfo.author;
+  $("#ver").textContent = aboutInfo.version;
+  $("#auName").textContent = lang === "en" ? a.name : a.arabic_name + " (" + a.name + ")";
+  $("#auAff").textContent = a.affiliation;
+  const m = $("#auMail"); m.textContent = a.email; m.href = "mailto:" + a.email;
+  const L = $("#auLinks"); L.textContent = "";
+  [["GitHub", a.github], ["Web", a.website], ["Scholar", a.scholar], ["ORCID", a.orcid]].forEach(([n, u]) => {
+    const x = document.createElement("a"); x.href = u; x.textContent = n; x.target = "_blank"; x.rel = "noopener";
+    L.append(x, "  ");
+  });
+}
+
+/* ---------- init ---------- */
+$$("[data-lang]").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+$$("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+$("#apikey").value = (() => { try { return sessionStorage.getItem("gd_key") || ""; } catch (e) { return ""; } })();
+$("#apikey").addEventListener("change", e => { try { sessionStorage.setItem("gd_key", e.target.value); } catch (x) {} loadDatasets(); });
+async function loadDatasets() { try { datasets = await api("/datasets"); fillDatasets(); } catch (e) { msg("#dlMsg", e.message, "err"); } }
+(async function init() {
+  const qp = new URLSearchParams(location.search).get("lang");
+  applyLang(qp || store.get("gd_lang") || (navigator.language || "en").slice(0, 2));
+  showTab((location.hash || "#search").slice(1).replace(/[^a-z]/g, "") && $("#tab-" + location.hash.slice(1)) ? location.hash.slice(1) : "search");
+  try { aboutInfo = await (await fetch("/")).json(); renderAbout(); } catch (e) {}
+  loadDatasets();
+})();
+</script>
+</body>
+</html>

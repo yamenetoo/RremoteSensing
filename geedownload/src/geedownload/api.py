@@ -26,7 +26,7 @@ from typing import Dict, List, Optional, Union
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 from shapely.geometry import mapping
 
@@ -207,8 +207,19 @@ def create_app() -> FastAPI:
     # --- public
     @app.get("/", summary="API information", tags=["info"])
     def root():
-        return {"name": "geedownload", "version": __version__, "docs": "/docs", "logo": "/logo.png",
+        return {"name": "geedownload", "version": __version__, "docs": "/docs", "logo": "/logo.png", "gui": "/app",
                 "author": AUTHOR, "auth_required": bool(api_key)}
+
+    @app.get("/app", summary="Web interface (Arabic / Persian / English)", tags=["info"], include_in_schema=False)
+    def gui():
+        import json
+
+        gui_dir = ASSETS / "gui"
+        i18n = (gui_dir / "i18n.json").read_text(encoding="utf-8")
+        html = (gui_dir / "index.html").read_text(encoding="utf-8")
+        # JSON is embedded in a <script>: make "</" safe
+        html = html.replace("/*I18N_JSON*/{}", json.dumps(json.loads(i18n), ensure_ascii=False).replace("</", "<\\/"))
+        return HTMLResponse(html)
 
     @app.get("/health", summary="Health check", tags=["info"])
     def health():

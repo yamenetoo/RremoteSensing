@@ -34,7 +34,7 @@ all = ["cartopy>=0.22", "matplotlib>=3.7", "pillow", "fastapi>=0.110", "uvicorn[
 dev = ["pytest", "httpx", "cartopy>=0.22", "matplotlib>=3.7", "pillow", "fastapi>=0.110", "uvicorn[standard]>=0.27"]
 
 [project.urls]
-Homepage = "https://github.com/yamenetoo/RremoteSensing/tree/main/geedownload"
+Homepage = "https://github.com/yamenetoo/geedownload"
 Author = "https://yamenetoo.github.io"
 "Google Scholar" = "https://scholar.google.com/citations?user=un_6SQwAAAAJ"
 ORCID = "https://orcid.org/0009-0009-1665-7203"
@@ -46,7 +46,7 @@ geedownload = "geedownload.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-geedownload = ["assets/*.svg", "assets/*.png"]
+geedownload = ["assets/*.svg", "assets/*.png", "assets/gui/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

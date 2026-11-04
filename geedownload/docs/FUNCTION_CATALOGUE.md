@@ -848,6 +848,20 @@ options:
   --port PORT
 ```
 
+### `geedownload gui`
+
+```text
+usage: geedownload gui [-h] [--host HOST] [--port PORT] [--lang {ar,fa,en}]
+                       [--no-browser]
+
+options:
+  -h, --help         show this help message and exit
+  --host HOST
+  --port PORT
+  --lang {ar,fa,en}
+  --no-browser
+```
+
 ### `geedownload about`
 
 ```text
@@ -865,6 +879,7 @@ Interactive docs at `/docs` when the server runs.
 | method | path | description |
 |---|---|---|
 | GET | `/` | API information |
+| GET | `/app` | Web interface (Arabic / Persian / English) |
 | GET | `/health` | Health check |
 | GET | `/logo.png` | Package logo |
 | GET | `/datasets` | List built-in datasets |

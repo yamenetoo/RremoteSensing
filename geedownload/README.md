@@ -177,6 +177,17 @@ print(st["status"], st["files"])
 Safety defaults: the API never reads server file paths, serves job files only from the job folder, limits the bounding box
 (`GEEDOWNLOAD_MAX_AREA_KM2`, default 20 000 km²) and runs a limited number of parallel jobs (`GEEDOWNLOAD_WORKERS`, default 2).
 
+## 5. Web interface (Arabic · فارسی · English)
+
+```bash
+geedownload gui                 # starts the API and opens http://127.0.0.1:8000/app
+geedownload gui --lang fa       # open directly in Persian (ar / fa / en)
+```
+
+A single-page GUI served by the API at `/app`: find an area (with a boundary preview and shapefile download), start a
+download job, follow jobs and fetch files, and draw maps — all in Arabic, Persian or English with automatic right-to-left
+layout. If the API needs a key, type it in the *API key* field. Translations live in `assets/gui/i18n.json`.
+
 ## Migrating from `S2.py`
 
 `S2.py` hard-coded Sentinel-2 and a bounding box. The same run now is:
@@ -220,5 +231,7 @@ import geedownload as gd
 res = gd.download_area("مصياف, سوريا", "sentinel2", "2023-06-01", "2023-09-30", out_dir="out", project="my-ee-project")
 gd.plot_map(res.stack, "map.jpg", area="Masyaf, Syria", bands=["B4", "B3", "B2"])
 ```
+
+واجهة رسومية بثلاث لغات (العربية، الفارسية، الإنجليزية): `geedownload gui`.
 
 المؤلف: **محمد يامن المحمد** — قسم الإحصاء، جامعة تبريز — البريد: yamenmohamad@tabrizu.ac.ir
