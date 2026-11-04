@@ -11,6 +11,7 @@ for it, draw **publication-style maps** with cartopy, and serve everything as a 
 - **Areas:** a place name (`"Masyaf, Syria"`), a country or state, a shapefile / GeoJSON, or a bounding box.
 - **Maps (JPG/PNG):** lat/lon grid with degree labels, scale bar, north arrow, legend or colour bar, area boundary, country borders, and a country inset. The legend and the inset are always drawn **outside** the map frame.
 - **Large areas** are split into tiles on one pixel grid and merged automatically (no 32 MB request limit).
+- **How to run it (code / GUI / localhost), step by step:** [`docs/HOW_TO_RUN.md`](docs/HOW_TO_RUN.md) (Arabic).
 - Full reference of every function: [`docs/FUNCTION_CATALOGUE.md`](docs/FUNCTION_CATALOGUE.md).
 
 ## Install
