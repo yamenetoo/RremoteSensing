@@ -344,6 +344,9 @@ def plot_map(raster=None, out_path="map.jpg", *, area=None, bands=None, cmap: st
     """
     _require_maps()
     import cartopy.crs as ccrs
+    import matplotlib
+
+    matplotlib.use("Agg")          # file output only; never open a Tk window (maps are drawn in worker threads)
     import matplotlib.pyplot as plt
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch

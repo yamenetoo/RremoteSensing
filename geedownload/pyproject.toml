@@ -30,7 +30,8 @@ dependencies = [
 [project.optional-dependencies]
 maps = ["cartopy>=0.22", "matplotlib>=3.7", "pillow"]
 api = ["fastapi>=0.110", "uvicorn[standard]>=0.27", "cartopy>=0.22", "matplotlib>=3.7", "pillow"]
-all = ["cartopy>=0.22", "matplotlib>=3.7", "pillow", "fastapi>=0.110", "uvicorn[standard]>=0.27"]
+all = ["cartopy>=0.22", "matplotlib>=3.7", "pillow", "arabic-reshaper", "python-bidi", "fastapi>=0.110", "uvicorn[standard]>=0.27"]
+gui = ["arabic-reshaper", "python-bidi", "pillow"]   # Arabic/Persian shaping on Linux + image preview
 dev = ["pytest", "httpx", "cartopy>=0.22", "matplotlib>=3.7", "pillow", "fastapi>=0.110", "uvicorn[standard]>=0.27"]
 
 [project.urls]

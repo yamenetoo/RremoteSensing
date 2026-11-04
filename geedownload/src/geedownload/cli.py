@@ -68,11 +68,14 @@ def _build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--host", default="127.0.0.1")
     sv.add_argument("--port", type=int, default=8000)
 
-    g = sub.add_parser("gui", help="run the REST API and open the web interface (ar / fa / en)")
-    g.add_argument("--host", default="127.0.0.1")
-    g.add_argument("--port", type=int, default=8000)
-    g.add_argument("--lang", choices=["ar", "fa", "en"], default=None)
-    g.add_argument("--no-browser", action="store_true")
+    g = sub.add_parser("gui", help="open the desktop GUI (Tkinter; Arabic / Persian / English)")
+    g.add_argument("--lang", choices=["ar", "fa", "en"], default="en")
+
+    w = sub.add_parser("webgui", help="run the REST API and open the web interface at /app")
+    w.add_argument("--host", default="127.0.0.1")
+    w.add_argument("--port", type=int, default=8000)
+    w.add_argument("--lang", choices=["ar", "fa", "en"], default=None)
+    w.add_argument("--no-browser", action="store_true")
 
     sub.add_parser("about", help="author and contact information")
     return p
@@ -141,6 +144,10 @@ def main(argv=None) -> int:
 
             uvicorn.run("geedownload.api:app", host=args.host, port=args.port)
         elif args.cmd == "gui":
+            from .gui import launch
+
+            launch(args.lang)
+        elif args.cmd == "webgui":
             import threading
             import webbrowser
 

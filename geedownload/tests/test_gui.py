@@ -37,3 +37,23 @@ def test_gui_route(tmp_path, monkeypatch):
     r = TestClient(api.create_app()).get("/app")
     assert r.status_code == 200 and "text/html" in r.headers["content-type"]
     assert "/*I18N_JSON*/" not in r.text and "فارسی" in r.text and "جستجو" in r.text
+
+
+def test_tk_gui_switches_languages():
+    """Runs in a subprocess: Tk must be created and destroyed in one process without other threads around."""
+    import subprocess
+    import sys
+
+    pytest.importorskip("tkinter")
+    code = (
+        "import sys, tkinter\n"
+        "from geedownload.gui import App\n"
+        "try:\n    app = App('ar')\nexcept tkinter.TclError:\n    sys.exit(77)\n"
+        "for lang in ('fa', 'en', 'ar'):\n    app.set_lang(lang); app.update()\n"
+        "assert len(app.nb.tabs()) == 4 and app.lang == 'ar'\n"
+        "app.destroy()\n"
+    )
+    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=60)
+    if r.returncode == 77:
+        pytest.skip("no display available")
+    assert r.returncode == 0, r.stderr

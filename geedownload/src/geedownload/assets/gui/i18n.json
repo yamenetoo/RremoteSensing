@@ -104,7 +104,20 @@
     "version": "Version",
     "unauthorized": "Wrong or missing API key.",
     "network_error": "Cannot reach the server.",
-    "done": "Done"
+    "done": "Done",
+    "out_dir": "Output folder",
+    "browse": "Browse…",
+    "log": "Log",
+    "ee_project": "Earth Engine project",
+    "raster": "GeoTIFF file",
+    "save_shp": "Save shapefile…",
+    "pick_first": "Select a result first.",
+    "opening": "Opening image…",
+    "need_raster": "Choose a GeoTIFF first.",
+    "dl_done": "Finished. Output folder:",
+    "running_now": "Working…",
+    "lang_note": "Arabic/Persian shaping on Linux needs: pip install arabic-reshaper python-bidi",
+    "gui_title": "geedownload"
   },
   "ar": {
     "subtitle": "ابحث عن أي منطقة، ونزّل صور الأقمار الصناعية، وارسم الخرائط",
@@ -211,7 +224,20 @@
     "version": "الإصدار",
     "unauthorized": "مفتاح API خاطئ أو مفقود.",
     "network_error": "تعذّر الاتصال بالخادم.",
-    "done": "تم"
+    "done": "تم",
+    "out_dir": "مجلد الإخراج",
+    "browse": "استعراض…",
+    "log": "السجل",
+    "ee_project": "مشروع Earth Engine",
+    "raster": "ملف GeoTIFF",
+    "save_shp": "حفظ shapefile…",
+    "pick_first": "اختر نتيجة أولاً.",
+    "opening": "جارٍ فتح الصورة…",
+    "need_raster": "اختر ملف GeoTIFF أولاً.",
+    "dl_done": "اكتمل. مجلد الإخراج:",
+    "running_now": "جارٍ العمل…",
+    "lang_note": "لعرض العربية والفارسية على لينكس: pip install arabic-reshaper python-bidi",
+    "gui_title": "geedownload"
   },
   "fa": {
     "subtitle": "هر منطقه‌ای را جستجو کنید، تصاویر ماهواره‌ای را دانلود کنید و نقشه بکشید",
@@ -318,6 +344,19 @@
     "version": "نسخه",
     "unauthorized": "کلید API نادرست است یا وجود ندارد.",
     "network_error": "اتصال به سرور برقرار نشد.",
-    "done": "انجام شد"
+    "done": "انجام شد",
+    "out_dir": "پوشهٔ خروجی",
+    "browse": "مرور…",
+    "log": "گزارش",
+    "ee_project": "پروژهٔ Earth Engine",
+    "raster": "فایل GeoTIFF",
+    "save_shp": "ذخیرهٔ شیپ‌فایل…",
+    "pick_first": "ابتدا یک نتیجه انتخاب کنید.",
+    "opening": "در حال باز کردن تصویر…",
+    "need_raster": "ابتدا یک فایل GeoTIFF انتخاب کنید.",
+    "dl_done": "پایان یافت. پوشهٔ خروجی:",
+    "running_now": "در حال کار…",
+    "lang_note": "برای نمایش فارسی و عربی در لینوکس: pip install arabic-reshaper python-bidi",
+    "gui_title": "geedownload"
   }
 }

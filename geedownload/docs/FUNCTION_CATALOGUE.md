@@ -851,8 +851,18 @@ options:
 ### `geedownload gui`
 
 ```text
-usage: geedownload gui [-h] [--host HOST] [--port PORT] [--lang {ar,fa,en}]
-                       [--no-browser]
+usage: geedownload gui [-h] [--lang {ar,fa,en}]
+
+options:
+  -h, --help         show this help message and exit
+  --lang {ar,fa,en}
+```
+
+### `geedownload webgui`
+
+```text
+usage: geedownload webgui [-h] [--host HOST] [--port PORT] [--lang {ar,fa,en}]
+                          [--no-browser]
 
 options:
   -h, --help         show this help message and exit

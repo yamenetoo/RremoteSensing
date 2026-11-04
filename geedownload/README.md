@@ -177,16 +177,20 @@ print(st["status"], st["files"])
 Safety defaults: the API never reads server file paths, serves job files only from the job folder, limits the bounding box
 (`GEEDOWNLOAD_MAX_AREA_KM2`, default 20 000 km²) and runs a limited number of parallel jobs (`GEEDOWNLOAD_WORKERS`, default 2).
 
-## 5. Web interface (Arabic · فارسی · English)
+## 5. Desktop GUI (Tkinter) in Arabic · فارسی · English
 
 ```bash
-geedownload gui                 # starts the API and opens http://127.0.0.1:8000/app
-geedownload gui --lang fa       # open directly in Persian (ar / fa / en)
+pip install "geedownload[all]"     # includes arabic-reshaper + python-bidi for Arabic/Persian text on Linux
+geedownload gui                    # English;  geedownload gui --lang ar   /   --lang fa
 ```
 
-A single-page GUI served by the API at `/app`: find an area (with a boundary preview and shapefile download), start a
-download job, follow jobs and fetch files, and draw maps — all in Arabic, Persian or English with automatic right-to-left
-layout. If the API needs a key, type it in the *API key* field. Translations live in `assets/gui/i18n.json`.
+A Tkinter window (needs `tkinter`: included with Python on Windows/macOS, `sudo apt install python3-tk` on Debian/Ubuntu).
+Tabs: **find an area** (results list, "use this area", save the boundary shapefile) → **download** (dataset, dates, bands,
+cloud limit, output folder, Earth Engine project; shows a preview map when finished) → **maps** (map from a GeoTIFF or an
+outline map of an area/country; legend and country inset always outside the map frame) → **about**. The language can be
+switched at any time; the text lives in `assets/gui/i18n.json`.
+
+Prefer a browser? `geedownload webgui` starts the REST API and opens the same three-language interface at `/app`.
 
 ## Migrating from `S2.py`
 
@@ -232,6 +236,6 @@ res = gd.download_area("مصياف, سوريا", "sentinel2", "2023-06-01", "202
 gd.plot_map(res.stack, "map.jpg", area="Masyaf, Syria", bands=["B4", "B3", "B2"])
 ```
 
-واجهة رسومية بثلاث لغات (العربية، الفارسية، الإنجليزية): `geedownload gui`.
+واجهة رسومية بثلاث لغات (العربية، الفارسية، الإنجليزية): `geedownload gui` (نافذة Tkinter) أو `geedownload webgui` (متصفح).
 
 المؤلف: **محمد يامن المحمد** — قسم الإحصاء، جامعة تبريز — البريد: yamenmohamad@tabrizu.ac.ir

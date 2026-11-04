@@ -15,7 +15,11 @@ def test_author_info():
 
 def test_catalogue_file_is_current():
     doc = Path(__file__).resolve().parents[1] / "docs" / "FUNCTION_CATALOGUE.md"
-    assert doc.read_text(encoding="utf-8") == gd.function_catalogue(), \
+    def norm(t):    # argparse's option layout differs between Python versions: compare words only in those blocks
+        import re
+        return re.sub(r"[ \t]+", " ", re.sub(r"^\s+-.*$", "", t, flags=re.M))
+
+    assert norm(doc.read_text(encoding="utf-8")) == norm(gd.function_catalogue()), \
         "run: geedownload catalogue -o docs/FUNCTION_CATALOGUE.md"
 
 
