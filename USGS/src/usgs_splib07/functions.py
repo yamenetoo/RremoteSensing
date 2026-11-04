@@ -11,6 +11,7 @@ from . import preprocess as pp
 from .api import get_library
 from .catalog import build_catalog, read_values
 from .demo import demo_library
+from .gui import launch_gui
 from .download import download_splib07, list_remote_files
 from .library import SpectralLibrary, build_library
 from .sensors import get_sensor, register_sensor, sensor_from_wavelengths, subset_sensor
@@ -33,6 +34,7 @@ GROUPS = [
     ("6. Sensors", "Band definitions used to simulate what a sensor would record.",
      [get_sensor, sensor_from_wavelengths, subset_sensor, register_sensor]),
     ("7. Demo data", "Invented spectra for trying the API offline.", [demo_library]),
+    ("8. Graphical interface", "A browser interface in English, Arabic and Persian (needs `pip install \"usgs-splib07[gui]\"`).", [launch_gui]),
 ]
 
 

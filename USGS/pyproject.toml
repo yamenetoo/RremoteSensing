@@ -28,7 +28,8 @@ dependencies = [
 [project.optional-dependencies]
 progress = ["tqdm"]
 plot = ["matplotlib"]
-dev = ["pytest", "tqdm", "matplotlib"]
+gui = ["streamlit>=1.50"]
+dev = ["pytest", "tqdm", "matplotlib", "streamlit>=1.50"]
 
 [project.urls]
 Homepage = "https://github.com/yamenetoo/RremoteSensing/tree/main/USGS"
@@ -39,6 +40,9 @@ splib07 = "usgs_splib07.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"usgs_splib07.gui" = ["assets/*.png"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

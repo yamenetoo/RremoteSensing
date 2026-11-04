@@ -15,6 +15,7 @@ from .api import default_home, get_library
 from .catalog import build_catalog, read_values
 from .demo import demo_library
 from .download import download_splib07, list_remote_files
+from .gui import launch_gui
 from .functions import catalogue_markdown, list_functions
 from .library import SpectralLibrary, build_library
 from .sensors import SENSORS, Band, Sensor, get_sensor, register_sensor, sensor_from_wavelengths, subset_sensor
@@ -25,5 +26,5 @@ __email__ = "yamenmohamad@tabrizu.ac.ir"
 __all__ = [
     "get_library", "default_home", "download_splib07", "list_remote_files", "build_library", "build_catalog", "read_values",
     "SpectralLibrary", "preprocess", "SENSORS", "Sensor", "Band", "get_sensor", "register_sensor",
-    "sensor_from_wavelengths", "subset_sensor", "demo_library", "list_functions", "catalogue_markdown",
+    "sensor_from_wavelengths", "subset_sensor", "demo_library", "launch_gui", "list_functions", "catalogue_markdown",
 ]

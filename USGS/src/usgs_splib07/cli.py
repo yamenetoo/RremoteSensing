@@ -1,4 +1,4 @@
-"""Command line interface: ``splib07 download | list-remote | build | info | search | features | functions``."""
+"""Command line interface: ``splib07 download | list-remote | build | info | search | features | gui | functions``."""
 from __future__ import annotations
 
 import argparse
@@ -62,6 +62,12 @@ def main(argv=None) -> int:
     s.add_argument("lib")
     s.add_argument("text")
 
+    s = sub.add_parser("gui", help="open the graphical interface in your browser (English / Arabic / Persian)")
+    s.add_argument("--port", type=int, default=8501)
+    s.add_argument("--lib", default=None, help="a saved library (.npz) to open at start")
+    s.add_argument("--lang", default="en", choices=["en", "ar", "fa"])
+    s.add_argument("--no-browser", action="store_true")
+
     s = sub.add_parser("functions", help="print the catalogue of public functions")
     s.add_argument("--group", default=None)
     s.add_argument("--markdown", action="store_true", help="markdown (this is what docs/FUNCTIONS.md contains)")
@@ -95,6 +101,10 @@ def main(argv=None) -> int:
         print(f"Wrote {len(df)} rows x {df.shape[1]} columns to {a.out}")
     elif a.cmd == "search":
         print(SpectralLibrary.load(a.lib).search(a.text)[["name", "material", "chapter_name"]].to_string())
+    elif a.cmd == "gui":
+        from .gui import launch_gui
+
+        return launch_gui(a.port, a.lib, a.lang, open_browser=not a.no_browser)
     elif a.cmd == "functions":
         from .functions import catalogue_markdown, list_functions
 

@@ -19,7 +19,7 @@ or process images.
 
 ## Contents
 
-[Install](#install) · [Quick start](#quick-start) · [Examples](#examples) · [Command line](#command-line) ·
+[Install](#install) · [Quick start](#quick-start) · [Examples](#examples) · [Graphical interface](#graphical-interface-english--العربية--فارسی) · [Command line](#command-line) ·
 [Function catalogue](#function-catalogue) · [How it works](#how-it-works) · [Data and citation](#data-and-citation) · [Author](#author)
 
 ## Install
@@ -29,7 +29,8 @@ pip install "git+https://github.com/yamenetoo/RremoteSensing.git#subdirectory=US
 # or from a clone, for development:  pip install -e ".[dev]"
 ```
 
-Python 3.9+. Required: numpy, scipy, pandas, requests. Optional: `matplotlib` (plots), `tqdm` (progress bars).
+Python 3.9+. Required: numpy, scipy, pandas, requests. Optional: `matplotlib` (plots), `tqdm` (progress bars),
+`streamlit` for the graphical interface (`pip install "usgs-splib07[gui]"`).
 
 ## Quick start
 
@@ -258,6 +259,33 @@ ax = lib.select(material=["Kaolinite", "Calcite", "Hematite"]).plot()
 Other scripts: [`01_synthetic_demo.py`](examples/01_synthetic_demo.py) (writes a fake USGS folder and runs download-free
 build and features), [`02_real_data.py`](examples/02_real_data.py) (the real download).
 
+## Graphical interface (English · العربية · فارسی)
+
+```bash
+pip install "usgs-splib07[gui]"
+splib07 gui                         # opens http://localhost:8501 in your browser
+splib07 gui --lang ar               # start in Arabic (ar), Persian (fa) or English (en)
+splib07 gui --lib lib.npz           # open a saved library at start
+```
+
+or from Python: `splib.launch_gui(lang="fa")`. The language can be switched at any time in the sidebar; Arabic and
+Persian switch the whole page to right-to-left, and you can paste or upload spectra with Arabic or Persian digits.
+
+| Tab | What you can do |
+|---|---|
+| **1. Data** | Start from the offline demo library, a saved `.npz`, or the real USGS library (downloaded once and cached; choose chapters and wavelength step). |
+| **2. Browse** | Search by name, filter by chapter and spectrometer, plot up to 10 spectra, download them as CSV. |
+| **3. Preprocess** | Tick steps in the order you want (clip, smooth, derivative, continuum removal, SNV, normalise, convert to sensor bands), see before and after, download the result as `.npz` or CSV. |
+| **4. Compare** | Upload or paste one measured spectrum (wavelength, reflectance) and get the closest library spectra by spectral angle, with an overlay plot. |
+
+<p align="center">
+<a href="docs/img/gui-en.png"><img src="docs/img/gui-en.png" width="32%" alt="English interface"></a>
+<a href="docs/img/gui-ar.png"><img src="docs/img/gui-ar.png" width="32%" alt="الواجهة العربية"></a>
+<a href="docs/img/gui-fa.png"><img src="docs/img/gui-fa.png" width="32%" alt="رابط فارسی"></a>
+</p>
+
+(The screenshots show the demo library. Click an image to enlarge it.)
+
 ## Command line
 
 ```bash
@@ -267,6 +295,7 @@ splib07 build data/ lib.npz --chapters MS --step 5
 splib07 info lib.npz
 splib07 search lib.npz kaolinite
 splib07 features lib.npz s2.csv --sensor sentinel2a --normalize l2
+splib07 gui --lang fa                        # graphical interface (needs the [gui] extra)
 splib07 functions                            # the function catalogue below
 ```
 
@@ -370,6 +399,14 @@ Invented spectra for trying the API offline.
 | Function | What it does |
 |---|---|
 | `demo_library()` | A small SYNTHETIC library (8 invented materials) on a fine grid, default 1 nm. For offline demos and tests only. |
+
+### 8. Graphical interface
+
+A browser interface in English, Arabic and Persian (needs `pip install "usgs-splib07[gui]"`).
+
+| Function | What it does |
+|---|---|
+| `launch_gui()` | Start the web interface in your browser (needs `pip install "usgs-splib07[gui]"`). Returns the exit code. |
 <!-- catalogue:end -->
 
 ## How it works
@@ -399,7 +436,7 @@ one spectrum through the steps).
 
 ```
 USGS/
-├── src/usgs_splib07/   download.py  catalog.py  library.py  preprocess.py  sensors.py  api.py  functions.py  demo.py  cli.py
+├── src/usgs_splib07/   download.py  catalog.py  library.py  preprocess.py  sensors.py  api.py  functions.py  demo.py  cli.py  gui/
 ├── examples/           01_synthetic_demo.py  02_real_data.py  03_preprocessing_tour.py
 ├── docs/               FUNCTIONS.md  workflow.tex/.pdf  img/ (logo, figures)
 └── tests/
@@ -410,7 +447,7 @@ Run the tests with `pip install -e ".[dev]" && pytest`.
 ### Changes in 3.0
 
 Focused on spectra. New: `get_library`, `SpectralLibrary.search / materials / spectrum / plot / to_csv`, the function
-catalogue (`list_functions`), logo and examples.
+catalogue (`list_functions`), the graphical interface in three languages (`splib07 gui`), logo and examples.
 
 ## Data and citation
 

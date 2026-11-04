@@ -96,3 +96,11 @@ Invented spectra for trying the API offline.
 | Function | What it does |
 |---|---|
 | `demo_library(start=350.0, stop=2500.0, step=1.0)` | A small SYNTHETIC library (8 invented materials) on a fine grid, default 1 nm. For offline demos and tests only. |
+
+## 8. Graphical interface
+
+A browser interface in English, Arabic and Persian (needs `pip install "usgs-splib07[gui]"`).
+
+| Function | What it does |
+|---|---|
+| `launch_gui(port=8501, library=None, lang='en', open_browser=True)` | Start the web interface in your browser (needs `pip install "usgs-splib07[gui]"`). Returns the exit code. |
