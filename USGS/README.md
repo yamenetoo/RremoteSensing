@@ -1,5 +1,7 @@
 # usgs-splib07
 
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yamenetoo/RremoteSensing/blob/main/USGS/notebooks/splib07_colab.ipynb)
+
 **Download the USGS Spectral Library Version 7, turn it into a clean machine-learning-ready library, preprocess spectra into features, and match satellite or airborne images (multispectral or hyperspectral) against it, in a few lines of Python.**
 
 ```python
